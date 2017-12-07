@@ -1,0 +1,294 @@
+diff --git src/include/Rinlinedfuns.h src/include/Rinlinedfuns.h
+index c7f158a1e..199bcd08d 100644
+--- src/include/Rinlinedfuns.h
++++ src/include/Rinlinedfuns.h
+@@ -72,6 +72,8 @@
+ 
+ #include <string.h> /* for strlen, strcmp */
+ 
++#include "assertthread.h"
++
+ /* define inline-able functions */
+ #ifdef TESTING_WRITE_BARRIER
+ # define STRICT_TYPECHECK
+@@ -451,6 +453,7 @@ extern SEXP* R_PPStack;
+ 
+ INLINE_FUN SEXP protect(SEXP s)
+ {
++    ASSERT_R_THREAD()
+     if (R_PPStackTop < R_PPStackSize)
+ 	R_PPStack[R_PPStackTop++] = s;
+     else R_signal_protect_error();
+@@ -459,6 +462,7 @@ INLINE_FUN SEXP protect(SEXP s)
+ 
+ INLINE_FUN void unprotect(int l)
+ {
++    ASSERT_R_THREAD()
+ #ifdef PROTECT_PARANOID
+     if (R_PPStackTop >=  l)
+ 	R_PPStackTop -= l;
+@@ -470,12 +474,14 @@ INLINE_FUN void unprotect(int l)
+ 
+ INLINE_FUN void R_ProtectWithIndex(SEXP s, PROTECT_INDEX *pi)
+ {
++    ASSERT_R_THREAD()
+     protect(s);
+     *pi = R_PPStackTop - 1;
+ }
+ 
+ INLINE_FUN void R_Reprotect(SEXP s, PROTECT_INDEX i)
+ {
++    ASSERT_R_THREAD()
+     if (i >= R_PPStackTop || i < 0)
+ 	R_signal_reprotect_error(i);
+     R_PPStack[i] = s;
+diff --git src/include/assertthread.h src/include/assertthread.h
+new file mode 100644
+index 000000000..df37c31d2
+--- /dev/null
++++ src/include/assertthread.h
+@@ -0,0 +1,22 @@
++#ifndef ASSERTTHREAD_H
++#define ASSERTTHREAD_H
++
++#ifdef DEBUG_THREAD
++#include <assert.h>
++#include <pthread.h>
++
++extern pthread_t __R_thread_id__;
++
++// This must be called from the main thread so that thread assertions can be
++// tested later.
++#define REGISTER_R_THREAD() __R_thread_id__ = pthread_self();
++#define ASSERT_R_THREAD()   assert(pthread_equal(pthread_self(), __R_thread_id__));
++
++#else
++#define REGISTER_R_THREAD()
++#define ASSERT_R_THREAD()
++
++#endif // DEBUG_THREAD
++
++
++#endif
+diff --git src/main/Rmain.c src/main/Rmain.c
+index 1fe8adc7c..ba3a977a4 100644
+--- src/main/Rmain.c
++++ src/main/Rmain.c
+@@ -21,10 +21,16 @@
+ int Rf_initialize_R(int ac, char **av); /* in ../unix/system.c */
+ 
+ #include <Rinterface.h>
++#include "assertthread.h"
++
++#ifdef DEBUG_THREAD
++pthread_t __R_thread_id__;
++#endif
+ 
+ int main(int ac, char **av)
+ {
+     R_running_as_main_program = 1;
++    REGISTER_R_THREAD()
+     Rf_initialize_R(ac, av);
+     Rf_mainloop(); /* does not return */
+     return 0;
+diff --git src/main/memory.c src/main/memory.c
+index b504c1421..ff1ff9fad 100644
+--- src/main/memory.c
++++ src/main/memory.c
+@@ -39,6 +39,8 @@
+ #include <R_ext/RS.h> /* for S4 allocation */
+ #include <R_ext/Print.h>
+ 
++#include "assertthread.h"
++
+ /* Declarations for Valgrind.
+ 
+    These are controlled by the
+@@ -2888,6 +2890,7 @@ SEXP allocFormalsList6(SEXP sym1, SEXP sym2, SEXP sym3, SEXP sym4,
+ 
+ void R_gc(void)
+ {
++    ASSERT_R_THREAD()
+     num_old_gens_to_collect = NUM_OLD_GENERATIONS;
+     R_gc_internal(0);
+ #ifndef IMMEDIATE_FINALIZERS
+@@ -2897,6 +2900,7 @@ void R_gc(void)
+ 
+ void R_gc_lite(void)
+ {
++    ASSERT_R_THREAD()
+     R_gc_internal(0);
+ #ifndef IMMEDIATE_FINALIZERS
+     R_RunPendingFinalizers();
+@@ -2905,6 +2909,7 @@ void R_gc_lite(void)
+ 
+ static void R_gc_no_finalizers(R_size_t size_needed)
+ {
++    ASSERT_R_THREAD()
+     num_old_gens_to_collect = NUM_OLD_GENERATIONS;
+     R_gc_internal(size_needed);
+ }
+@@ -2964,6 +2969,7 @@ static void gc_end_timing(void)
+ 
+ static void R_gc_internal(R_size_t size_needed)
+ {
++    ASSERT_R_THREAD()
+     if (!R_GCEnabled) {
+       if (NO_FREE_NODES())
+ 	R_NSize = R_NodesInUse + 1;
+@@ -3162,6 +3168,7 @@ void NORET R_signal_unprotect_error(void)
+ #ifndef INLINE_PROTECT
+ SEXP protect(SEXP s)
+ {
++    ASSERT_R_THREAD()
+     if (R_PPStackTop >= R_PPStackSize)
+ 	R_signal_protect_error();
+     R_PPStack[R_PPStackTop++] = CHK(s);
+@@ -3173,6 +3180,7 @@ SEXP protect(SEXP s)
+ 
+ void unprotect(int l)
+ {
++    ASSERT_R_THREAD()
+     if (R_PPStackTop >=  l)
+ 	R_PPStackTop -= l;
+     else R_signal_unprotect_error();
+@@ -3183,6 +3191,7 @@ void unprotect(int l)
+ 
+ void unprotect_ptr(SEXP s)
+ {
++    ASSERT_R_THREAD()
+     int i = R_PPStackTop;
+ 
+     /* go look for  s  in  R_PPStack */
+@@ -3204,6 +3213,7 @@ void unprotect_ptr(SEXP s)
+ 
+ int Rf_isProtected(SEXP s)
+ {
++    ASSERT_R_THREAD()
+     int i = R_PPStackTop;
+ 
+     /* go look for  s  in  R_PPStack */
+@@ -3220,6 +3230,7 @@ int Rf_isProtected(SEXP s)
+ #ifndef INLINE_PROTECT
+ void R_ProtectWithIndex(SEXP s, PROTECT_INDEX *pi)
+ {
++    ASSERT_R_THREAD()
+     protect(s);
+     *pi = R_PPStackTop - 1;
+ }
+@@ -3236,6 +3247,7 @@ void NORET R_signal_reprotect_error(PROTECT_INDEX i)
+ #ifndef INLINE_PROTECT
+ void R_Reprotect(SEXP s, PROTECT_INDEX i)
+ {
++    ASSERT_R_THREAD()
+     if (i >= R_PPStackTop || i < 0)
+ 	R_signal_reprotect_error(i);
+     R_PPStack[i] = s;
+@@ -3248,6 +3260,7 @@ void R_Reprotect(SEXP s, PROTECT_INDEX i)
+    to old. */
+ SEXP R_CollectFromIndex(PROTECT_INDEX i)
+ {
++    ASSERT_R_THREAD()
+     SEXP res;
+     int top = R_PPStackTop, j = 0;
+     if (i > top) i = top;
+@@ -3272,6 +3285,7 @@ void initStack(void)
+ 
+ void *R_chk_calloc(size_t nelem, size_t elsize)
+ {
++    ASSERT_R_THREAD()
+     void *p;
+ #ifndef HAVE_WORKING_CALLOC
+     if(nelem == 0)
+@@ -3286,6 +3300,7 @@ void *R_chk_calloc(size_t nelem, size_t elsize)
+ 
+ void *R_chk_realloc(void *ptr, size_t size)
+ {
++    ASSERT_R_THREAD()
+     void *p;
+     /* Protect against broken realloc */
+     if(ptr) p = realloc(ptr, size); else p = malloc(size);
+@@ -3297,6 +3312,7 @@ void *R_chk_realloc(void *ptr, size_t size)
+ 
+ void R_chk_free(void *ptr)
+ {
++    ASSERT_R_THREAD()
+     /* S-PLUS warns here, but there seems no reason to do so */
+     /* if(!ptr) warning("attempt to free NULL pointer by Free"); */
+     if(ptr) free(ptr); /* ANSI C says free has no effect on NULL, but
+@@ -3310,6 +3326,7 @@ void R_chk_free(void *ptr)
+ 
+ void R_PreserveObject(SEXP object)
+ {
++    ASSERT_R_THREAD()
+     R_PreciousList = CONS(object, R_PreciousList);
+ }
+ 
+@@ -3326,6 +3343,7 @@ static SEXP RecursiveRelease(SEXP object, SEXP list)
+ 
+ void R_ReleaseObject(SEXP object)
+ {
++    ASSERT_R_THREAD()
+     R_PreciousList =  RecursiveRelease(object, R_PreciousList);
+ }
+ 
+@@ -3333,6 +3351,7 @@ void R_ReleaseObject(SEXP object)
+ /* External Pointer Objects */
+ SEXP R_MakeExternalPtr(void *p, SEXP tag, SEXP prot)
+ {
++    ASSERT_R_THREAD()
+     SEXP s = allocSExp(EXTPTRSXP);
+     EXTPTR_PTR(s) = p;
+     EXTPTR_PROT(s) = CHK(prot);
+@@ -3342,6 +3361,7 @@ SEXP R_MakeExternalPtr(void *p, SEXP tag, SEXP prot)
+ 
+ void *R_ExternalPtrAddr(SEXP s)
+ {
++    ASSERT_R_THREAD()
+     return EXTPTR_PTR(CHK(s));
+ }
+ 
+@@ -3357,16 +3377,19 @@ SEXP R_ExternalPtrProtected(SEXP s)
+ 
+ void R_ClearExternalPtr(SEXP s)
+ {
++    ASSERT_R_THREAD()
+     EXTPTR_PTR(s) = NULL;
+ }
+ 
+ void R_SetExternalPtrAddr(SEXP s, void *p)
+ {
++    ASSERT_R_THREAD()
+     EXTPTR_PTR(s) = p;
+ }
+ 
+ void R_SetExternalPtrTag(SEXP s, SEXP tag)
+ {
++    ASSERT_R_THREAD()
+     FIX_REFCNT(s, EXTPTR_TAG(s), tag);
+     CHECK_OLD_TO_NEW(s, tag);
+     EXTPTR_TAG(s) = tag;
+@@ -3374,6 +3397,7 @@ void R_SetExternalPtrTag(SEXP s, SEXP tag)
+ 
+ void R_SetExternalPtrProtected(SEXP s, SEXP p)
+ {
++    ASSERT_R_THREAD()
+     FIX_REFCNT(s, EXTPTR_PROT(s), p);
+     CHECK_OLD_TO_NEW(s, p);
+     EXTPTR_PROT(s) = p;
+@@ -3387,6 +3411,7 @@ typedef union {void *p; DL_FUNC fn;} fn_ptr;
+ 
+ SEXP R_MakeExternalPtrFn(DL_FUNC p, SEXP tag, SEXP prot)
+ {
++    ASSERT_R_THREAD()
+     fn_ptr tmp;
+     SEXP s = allocSExp(EXTPTRSXP);
+     tmp.fn = p;
+@@ -3398,6 +3423,7 @@ SEXP R_MakeExternalPtrFn(DL_FUNC p, SEXP tag, SEXP prot)
+ 
+ DL_FUNC R_ExternalPtrAddrFn(SEXP s)
+ {
++    ASSERT_R_THREAD()
+     fn_ptr tmp;
+     tmp.p =  EXTPTR_PTR(CHK(s));
+     return tmp.fn;
