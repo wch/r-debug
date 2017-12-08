@@ -1,7 +1,7 @@
 # To build, cd to this directory, then:
 #   docker build -t r-debug .
 #
-# To run with the built-in shiny-examples:
+# To run:
 #   docker run --rm -ti --name rd r-debug
 
 # Use a very recent version of Ubuntu to get the latest GCC, which we need for
