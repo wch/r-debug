@@ -42,10 +42,10 @@ docker build -t wch1/r-debug .
 
 ### Running containers
 
-To use:
+To start a container:
 
 ```
-docker run --rm -ti wch1/r-debug
+docker run --rm -ti --security-opt seccomp=unconfined wch1/r-debug
 
 # Then you can run R-devel with:
 RD
@@ -57,11 +57,13 @@ RDstrictbarrier
 RDassertthread
 ```
 
+The `--security-opt seccomp=unconfined` is needed to use `gdb` in the container. Without it, you'll see a message like `warning: Error disabling address space randomization: Operation not permitted`, and R will fail to start in the debugger.
+
 
 To mount a local directory in the docker container:
 
 ```
-docker run --rm -ti -v /my/local/dir:/mydir wch1/r-debug
+docker run --rm -ti --security-opt seccomp=unconfined -v /my/local/dir:/mydir wch1/r-debug
 
 ```
 
@@ -70,7 +72,7 @@ If you want to have multiple terminals in the same container, start the containe
 
 ```
 # Start container
-docker run --rm -ti --name rd wch1/r-debug
+docker run --rm -ti --name rd --security-opt seccomp=unconfined wch1/r-debug
 
 # In another terminal, get a bash prompt in the container
 docker exec -ti rd /bin/bash
