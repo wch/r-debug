@@ -1,4 +1,4 @@
-(https://images.microbadger.com/badges/image/wch1/r-debug.svg)](https://microbadger.com/images/wch1/r-debug)
+[![](https://images.microbadger.com/badges/image/wch1/r-debug.svg)](https://microbadger.com/images/wch1/r-debug)
 
 Status at Docker Hub: [wch1/r-debug](https://hub.docker.com/r/wch1/r-debug/)
 
