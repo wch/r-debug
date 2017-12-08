@@ -91,26 +91,26 @@ COPY buildR.sh /tmp
 
 # RD: Install normal R-devel
 RUN /tmp/buildR.sh
-RUN RD -e 'install.packages("devtools", "Rcpp")'
+RUN RD -e 'install.packages(c("devtools", "Rcpp"))'
 
 # RDvalgrind2: Install R-devel with valgrind level 2 instrumentation
 RUN /tmp/buildR.sh valgrind2
-RUN RDvalgrind2 -e 'install.packages("devtools", "Rcpp")'
+RUN RDvalgrind2 -e 'install.packages(c("devtools", "Rcpp"))'
 
 # RDsan: R-devel with address sanitizer (ASAN) and undefined behavior sanitizer (UBSAN)
 # Entry copied from Prof Ripley's setup described at http://www.stats.ox.ac.uk/pub/bdr/memtests/README.txt
 # Also increase malloc_context_size to a depth of 200 calls.
 ENV ASAN_OPTIONS 'alloc_dealloc_mismatch=0:detect_leaks=0:detect_odr_violation=0:malloc_context_size=200'
 RUN /tmp/buildR.sh san
-RUN RDsan -e 'install.packages("devtools", "Rcpp")'
+RUN RDsan -e 'install.packages(c("devtools", "Rcpp"))'
 
 # RDstrictbarrier: Make sure that R objects are protected properly.
 RUN /tmp/buildR.sh strictbarrier
-RUN RDstrictbarrier -e 'install.packages("devtools", "Rcpp")'
+RUN RDstrictbarrier -e 'install.packages(c("devtools", "Rcpp"))'
 
 # RDassertthread: Make sure that R's memory management functions are called
 # only from the main R thread.
 COPY assertthread.patch /tmp/r-source
 RUN (cd /tmp/r-source && patch -p0 < assertthread.patch)
 RUN /tmp/buildR.sh assertthread
-RUN RDassertthread -e 'install.packages("devtools", "Rcpp")'
+RUN RDassertthread -e 'install.packages(c("devtools", "Rcpp"))'
