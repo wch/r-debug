@@ -24,11 +24,12 @@ elif [[ $1 = "san" ]]; then
     # Settings borrowed from:
     # http://www.stats.ox.ac.uk/pub/bdr/memtests/README.txt
     # https://github.com/rocker-org/r-devel-san/blob/master/Dockerfile
+    # But without -mtune=native because the Docker image needs to be portable.
     export CXX="g++ -fsanitize=address,undefined,bounds-strict -fno-omit-frame-pointer"
-    export CFLAGS="${CFLAGS} -pedantic -mtune=native -fsanitize=address"
-    export FFLAGS="${CFLAGS} -mtune=native"
-    export FCFLAGS="${CFLAGS} -mtune=native"
-    export CXXFLAGS="${CFLAGS} -pedantic -mtune=native"
+    export CFLAGS="${CFLAGS} -pedantic -fsanitize=address"
+    export FFLAGS="${CFLAGS}"
+    export FCFLAGS="${CFLAGS}"
+    export CXXFLAGS="${CFLAGS} -pedantic"
     export MAIN_LDFLAGS="-fsanitize=address,undefined"
 
     # Did not copy over ~/.R/Makevars from BDR's page because other R
