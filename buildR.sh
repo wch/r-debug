@@ -20,10 +20,12 @@ elif [[ $1 = "valgrind2" ]]; then
 
 elif [[ $1 = "san" ]]; then
     suffix="san"
-    configure_flags=""
+    # According to https://cran.r-project.org/doc/manuals/r-devel/R-exts.html#Using-Undefined-Behaviour-Sanitizer
+    # there is a problem compiling R gcc and openmp.
+    configure_flags="--disable-openmp"
     # Settings borrowed from:
     # http://www.stats.ox.ac.uk/pub/bdr/memtests/README.txt
-    # https://github.com/rocker-org/r-devel-san/blob/master/Dockerfile
+    # https://github.com/rocker-org/r-devel-san/blob/mzaster/Dockerfile
     # But without -mtune=native because the Docker image needs to be portable.
     export CXX="g++ -fsanitize=address,undefined,bounds-strict -fno-omit-frame-pointer"
     export CFLAGS="${CFLAGS} -pedantic -fsanitize=address"
