@@ -18,14 +18,14 @@ if [[ $# -eq 0 ]]; then
 
 elif [[ $1 = "valgrind2" ]]; then
     suffix="valgrind2"
-    configure_flags="--with-valgrind-instrumentation=2"
+    configure_flags="--with-valgrind-instrumentation=2 --without-recommended-packages"
 
 elif [[ $1 = "san" ]]; then
     suffix="san"
-    configure_flags=""
+    configure_flags="--without-recommended-packages"
     # Settings borrowed from:
     # http://www.stats.ox.ac.uk/pub/bdr/memtests/README.txt
-    # https://github.com/rocker-org/r-devel-san/blob/mzaster/Dockerfile
+    # https://github.com/rocker-org/r-devel-san/blob/master/Dockerfile
     # But without -mtune=native because the Docker image needs to be portable.
     export CXX="g++ -fsanitize=address,undefined,bounds-strict -fno-omit-frame-pointer"
     export CFLAGS="${CFLAGS} -pedantic -fsanitize=address"
@@ -50,11 +50,11 @@ elif [[ $1 = "san" ]]; then
     # other R installations would inherit settings meant for this build.
 elif [[ "$1" = "strictbarrier" ]]; then
     suffix="strictbarrier"
-    configure_flags="--enable-strict-barrier"
+    configure_flags="--enable-strict-barrier --without-recommended-packages"
 
 elif [[ "$1" = "assertthread" ]]; then
     suffix="assertthread"
-    configure_flags=""
+    configure_flags="--without-recommended-packages"
 fi
 
 dirname="RD${suffix}"
@@ -69,9 +69,6 @@ cd /tmp/r-source
 ./configure \
     --prefix=/usr/local/${dirname} \
     --enable-R-shlib \
-    --without-blas \
-    --without-lapack \
-    --with-readline \
     ${configure_flags}
 
 # Do some stuff to simulate an SVN checkout.
@@ -90,7 +87,20 @@ make install
 
 # Clean up, but don't delete rsync'ed packages
 git clean -xdf -e src/library/Recommended/
-rm src/library/Recommended/Makefile
+rm -f src/library/Recommended/Makefile
+
+
+## Set Renviron to first use this version of R's site-library/, then library/,
+## then use "vanilla" RD installation's library/. This makes it so we
+## don't have to install recommended packages for every single
+echo "R_LIBS=\${R_LIBS-'/usr/local/${dirname}/lib/R/site-library:/usr/local/${dirname}/lib/R/library:/usr/local/RD/lib/R/library'}
+R_LIBS_USER=~/${dirname}/x86_64-pc-linux-gnu-library/3.5" \
+    >> /usr/local/${dirname}/lib/R/etc/Renviron
+
+# Create the site-library dir; packages installed after this point will go
+# there.
+mkdir "/usr/local/${dirname}/lib/R/site-library"
+
 
 # Set default CRAN repo
 echo 'options(

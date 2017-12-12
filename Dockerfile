@@ -90,28 +90,43 @@ RUN cd /tmp \
 
 COPY buildR.sh /tmp
 
-# RD: Install normal R-devel
+# RD: Install normal R-devel.
+#
+# This R installation is slightly different from the ones that follow. It is
+# configured with the recommended packages, and has those packages installed
+# packages to library/ (not site-library/). These packages will be shared with
+# the other RD* installations that follow. For all the RD* installations
+# (including this one), all packages installed after buildR.sh runs will be
+# installed to each installation's site-library/.
+#
+# I've set it up this way because the "recommended" packages take a long time
+# to compile and in most cases aren't involved in debugging the low-level
+# problems that this Dockerfile is for, so it's OK to compile them once and
+# share them. Other packages, like those installed by the user and Rcpp
+# (*especially* Rcpp), are often of interest -- they are installed for each
+# RD* installation, and code is compiled with whatever compiler settings are
+# used for each RD* installation.
 RUN /tmp/buildR.sh
-RUN RD -e 'install.packages(c("devtools", "Rcpp"))'
+RUN RD -q -e 'install.packages(c("devtools", "Rcpp"))'
 
 # RDvalgrind2: Install R-devel with valgrind level 2 instrumentation
 RUN /tmp/buildR.sh valgrind2
-RUN RDvalgrind2 -e 'install.packages(c("devtools", "Rcpp"))'
+RUN RDvalgrind2 -q -e 'install.packages(c("devtools", "Rcpp"))'
 
 # RDsan: R-devel with address sanitizer (ASAN) and undefined behavior sanitizer (UBSAN)
 # Entry copied from Prof Ripley's setup described at http://www.stats.ox.ac.uk/pub/bdr/memtests/README.txt
 # Also increase malloc_context_size to a depth of 200 calls.
 ENV ASAN_OPTIONS 'alloc_dealloc_mismatch=0:detect_leaks=0:detect_odr_violation=0:malloc_context_size=200'
 RUN /tmp/buildR.sh san
-RUN RDsan -e 'install.packages(c("devtools", "Rcpp"))'
+RUN RDsan -q -e 'install.packages(c("devtools", "Rcpp"))'
 
 # RDstrictbarrier: Make sure that R objects are protected properly.
 RUN /tmp/buildR.sh strictbarrier
-RUN RDstrictbarrier -e 'install.packages(c("devtools", "Rcpp"))'
+RUN RDstrictbarrier -q -e 'install.packages(c("devtools", "Rcpp"))'
 
 # RDassertthread: Make sure that R's memory management functions are called
 # only from the main R thread.
 COPY assertthread.patch /tmp/r-source
 RUN (cd /tmp/r-source && patch -p0 < assertthread.patch)
 RUN /tmp/buildR.sh assertthread
-RUN RDassertthread -e 'install.packages(c("devtools", "Rcpp"))'
+RUN RDassertthread -q -e 'install.packages(c("devtools", "Rcpp"))'
