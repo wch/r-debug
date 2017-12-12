@@ -11,7 +11,7 @@ This repository contains a Dockerfile for creating an Docker image with the foll
 * `gdb`
 * `valgrind`
 * `R`: The current release version of R.
-* `RD`: The current development version of R (R-devel).
+* `RD`: The current development version of R (R-devel). This version is compiled without optimizations (`-O0`), so a debugger can be used to inspect the code as written, instead of an optimized version of the code which may be significantly different.
 * `RDvalgrind2`: R-devel compiled with valgrind level 2 instrumentation. This should be started with `RDvalgrind2 -d valgrind`.
 * `RDsan`: R-devel compiled with Address Sanitizer and Undefined Behavior Sanitizer.
 * `RDstrictbarrier`: R-devel compiled with `--enable-strict-barrier`. This can be used with `gctorture(TRUE)`, or `gctorture2(1, inhibit_release=TRUE)`.
@@ -19,7 +19,7 @@ This repository contains a Dockerfile for creating an Docker image with the foll
 
 See [Writing R Extensions](https://cran.r-project.org/doc/manuals/r-release/R-exts.html#Checking-memory-access) for more information about these builds (except the assert-thread build, which uses a patch that I wrote.)
 
-Each of the builds of R has its own libpath, so that a package installed with one build will not be accidentally used by another. They come with devtools and Rcpp installed.
+Each of the builds of R has its own library, so that a package installed with one build will not be accidentally used by another (With the exception of base R's "recommended packages". If you want to know the details, see the Dockerfile.) Each build of R comes with devtools and Rcpp installed.
 
 
 ## Usage
