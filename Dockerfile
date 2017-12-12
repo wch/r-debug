@@ -84,8 +84,7 @@ RUN wget -qO- \
 
 # Clone R-devel and download recommended packages
 RUN cd /tmp \
-    && git clone --depth 30 https://github.com/wch/r-source.git \
-    && (cd r-source && git checkout 5f86e82f26f7066d25732ca11b48bd95ef95e63c) \
+    && git clone --depth 1 https://github.com/wch/r-source.git \
     && r-source/tools/rsync-recommended
 
 COPY buildR.sh /tmp
