@@ -6,7 +6,7 @@ Status at Docker Hub: [wch1/r-debug](https://hub.docker.com/r/wch1/r-debug/)
 Docker image for debugging R memory problems
 ============================================
 
-This repository contains a Dockerfile for creating an Docker image with the following tools and builds of R:
+This repository contains a Dockerfile for creating an Docker image, `wch1/r-debug` with the following tools and builds of R:
 
 * `gdb`
 * `valgrind`
@@ -36,8 +36,18 @@ docker pull wch1/r-debug
 Or you can build the image by cloning this repository, entering the directory, and running:
 
 ```
-docker build -t wch1/r-debug .
+./build.sh
 ```
+
+This builds a number of intermediate Docker images, in this order:
+
+* wch1/r-devel
+* wch1/r-debug-1
+* wch1/r-debug-2
+* wch1/r-debug-3
+* wch1/r-debug
+
+Only the last one, wch1/r-debug, is needed in the end, and it contains all the various builds of R. The reason it is split up into intermediate Docker images is because building the several versions of R takes a long time, and doing it with a single Dockerfile causes timeouts with Docker Hub's automated build system.
 
 
 ### Running containers
@@ -65,6 +75,8 @@ To mount a local directory in the docker container:
 ```
 docker run --rm -ti --security-opt seccomp=unconfined -v /my/local/dir:/mydir wch1/r-debug
 
+# Mount the current host directory at /mydir
+docker run --rm -ti --security-opt seccomp=unconfined -v $(pwd):/mydir wch1/r-debug
 ```
 
 

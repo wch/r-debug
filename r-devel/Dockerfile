@@ -1,8 +1,8 @@
-# To build, cd to this directory, then:
-#   docker build -t r-debug .
+# To build from the parent directory:
+#   docker build -t wch1/r-devel r-devel
 #
 # To run:
-#   docker run --rm -ti --name rd r-debug
+#   docker run --rm -ti --name rd wch1/r-devel
 
 # Use a very recent version of Ubuntu to get the latest GCC, which we need for
 # some of options used for ASAN builds.
@@ -107,25 +107,3 @@ COPY buildR.sh /tmp
 # used for each RD* installation.
 RUN /tmp/buildR.sh
 RUN RD -q -e 'install.packages(c("devtools", "Rcpp"))'
-
-# RDvalgrind2: Install R-devel with valgrind level 2 instrumentation
-RUN /tmp/buildR.sh valgrind2
-RUN RDvalgrind2 -q -e 'install.packages(c("devtools", "Rcpp"))'
-
-# RDsan: R-devel with address sanitizer (ASAN) and undefined behavior sanitizer (UBSAN)
-# Entry copied from Prof Ripley's setup described at http://www.stats.ox.ac.uk/pub/bdr/memtests/README.txt
-# Also increase malloc_context_size to a depth of 200 calls.
-ENV ASAN_OPTIONS 'alloc_dealloc_mismatch=0:detect_leaks=0:detect_odr_violation=0:malloc_context_size=200'
-RUN /tmp/buildR.sh san
-RUN RDsan -q -e 'install.packages(c("devtools", "Rcpp"))'
-
-# RDstrictbarrier: Make sure that R objects are protected properly.
-RUN /tmp/buildR.sh strictbarrier
-RUN RDstrictbarrier -q -e 'install.packages(c("devtools", "Rcpp"))'
-
-# RDassertthread: Make sure that R's memory management functions are called
-# only from the main R thread.
-COPY assertthread.patch /tmp/r-source
-RUN (cd /tmp/r-source && patch -p0 < assertthread.patch)
-RUN /tmp/buildR.sh assertthread
-RUN RDassertthread -q -e 'install.packages(c("devtools", "Rcpp"))'
