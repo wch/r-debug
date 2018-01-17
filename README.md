@@ -6,6 +6,8 @@ Status at Docker Hub: [wch1/r-debug](https://hub.docker.com/r/wch1/r-debug/)
 Docker image for debugging R memory problems
 ============================================
 
+The document [debugging-r.md](debugging-r.md) document contains information about diagnosing bugs in C and C++ code that interfaces with R.
+
 This repository contains a Dockerfile for creating an Docker image, `wch1/r-debug` with the following tools and builds of R:
 
 * `gdb`
