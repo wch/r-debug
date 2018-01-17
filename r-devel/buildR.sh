@@ -16,8 +16,8 @@ if [[ $# -eq 0 ]]; then
     suffix=""
     configure_flags=""
 
-elif [[ $1 = "valgrind2" ]]; then
-    suffix="valgrind2"
+elif [[ $1 = "valgrind" ]]; then
+    suffix="valgrind"
     configure_flags="--with-valgrind-instrumentation=2 --without-recommended-packages"
 
 elif [[ $1 = "san" ]]; then
