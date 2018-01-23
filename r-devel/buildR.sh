@@ -54,6 +54,8 @@ elif [[ "$1" = "strictbarrier" ]]; then
 
 elif [[ "$1" = "assertthread" ]]; then
     suffix="assertthread"
+    export CFLAGS="${CFLAGS} -DDEBUG_THREAD -UNDEBUG"
+    export CXXFLAGS="${CXXFLAGS} -DDEBUG_THREAD -UNDEBUG"
     configure_flags="--without-recommended-packages"
 fi
 
