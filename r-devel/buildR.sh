@@ -57,10 +57,10 @@ elif [[ "$1" = "csan" ]]; then
     # https://github.com/rocker-org/r-devel-san/blob/master/Dockerfile
     export CC="clang -fsanitize=address,undefined -fno-sanitize=float-divide-by-zero -fno-omit-frame-pointer"
     export CXX="clang++ -fsanitize=address,undefined -fno-sanitize=float-divide-by-zero -fno-omit-frame-pointer -frtti"
-    export CFLAGS="-g -O3 -Wall -pedantic"
-    export FFLAGS="-g -O2"
-    export FCFLAGS="-g -O2"
-    export CXXFLAGS="-g -O3 -Wall -pedantic"
+    export CFLAGS="-g -O0 -Wall -pedantic"
+    export FFLAGS="-g -O0"
+    export FCFLAGS="-g -O0"
+    export CXXFLAGS="-g -O0 -Wall -pedantic"
     export CXXSTD=-std=gnu++98
     export MAIN_LD="clang++ -fsanitize=undefined,address"
 
