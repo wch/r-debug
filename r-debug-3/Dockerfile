@@ -9,13 +9,11 @@ FROM wch1/r-debug-2
 # malloc_context_size to a depth of 200 calls.
 ENV ASAN_OPTIONS 'alloc_dealloc_mismatch=0:detect_leaks=0:detect_odr_violation=0:malloc_context_size=200'
 ENV RGL_USE_NULL true
-
-# Need to increase stack size; otherwise we get these messages during package
-# compilation:
-# Error: compilation failed -  C stack usage  8042720 is too close to the limit at NULL
-# Note that this only has an effect if you run bash in the container; if you
-# run RDcsan directly, it won't work.
-RUN echo "ulimit -Ss 16384" >> /root/.bashrc
-
 RUN /tmp/buildR.sh csan
+
+# Modify the RDcsan script to increase stack size with `ulimit -Ss 16384`;
+# otherwise we get these messages during package compilation:
+# Error: compilation failed -  C stack usage  8042720 is too close to the limit at NULL
+RUN sed -i 's/^#!\/bin\/bash/#!\/bin\/bash\nulimit -Ss 16384/' /usr/local/bin/RDcsan
+
 RUN RDcsan -q -e 'install.packages(c("devtools", "Rcpp"))'
