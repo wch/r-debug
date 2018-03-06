@@ -55,8 +55,16 @@ RUN apt-get update && apt-get install -y \
     xfonts-base \
     xvfb \
     gdb \
-    valgrind
+    valgrind \
+    clang-5.0 \
+    lldb-5.0
 
+# clang 5.0 is the newest available for Ubuntu 17.10, but the R clang-UBSAN
+# test machine uses 6.0.0rc.
+# https://www.stats.ox.ac.uk/pub/bdr/memtests/README.txt
+# Set it as the default
+RUN update-alternatives --install /usr/bin/clang++ clang++ /usr/bin/clang++-5.0 100 \
+    && update-alternatives --install /usr/bin/clang clang /usr/bin/clang-5.0 100
 
 RUN echo 'options(\n\
   repos = c(CRAN = "https://cloud.r-project.org/"),\n\

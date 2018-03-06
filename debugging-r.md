@@ -69,13 +69,14 @@ The r-debug docker image contains the following:
 * `R`: The current release version of R.
 * `RD`: The current development version of R (R-devel). This version is compiled without optimizations (`-O0`), so a debugger can be used to inspect the code as written, instead of an optimized version of the code which may be significantly different.
 * `RDvalgrind`: R-devel compiled with valgrind level 2 instrumentation. This should be started with `RDvalgrind -d valgrind`.
-* `RDsan`: R-devel compiled with Address Sanitizer and Undefined Behavior Sanitizer.
+* `RDsan`: R-devel compiled with gcc, Address Sanitizer and Undefined Behavior Sanitizer.
+* `RDcsan`: R-devel compiled with clang, Address Sanitizer and Undefined Behavior Sanitizer.
 * `RDstrictbarrier`: R-devel compiled with `--enable-strict-barrier`. This can be used with `gctorture(TRUE)`, or `gctorture2(1, inhibit_release=TRUE)`.
 * `RDassertthread`: R-devel, with a patch that detects if memory management functions are called from the wrong thread.
 
 Each of the builds of R has its own libpath, so that a package installed with one build will not be accidentally used by another. Each one comes with devtools and Rcpp installed.
 
-To use any of the special builds of R, instead of running `R`, run `RD`, `RDsan` and so on.
+To use any of the special builds of R, instead of running `R`, run `RD`, `RDsan`, and so on.
 
 
 #### Debuggers: gdb and lldb

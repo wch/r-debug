@@ -16,13 +16,13 @@ if [[ $# -eq 0 ]]; then
     suffix=""
     configure_flags=""
 
-elif [[ $1 = "valgrind" ]]; then
+elif [[ "$1" = "valgrind" ]]; then
     suffix="valgrind"
-    configure_flags="--with-valgrind-instrumentation=2 --without-recommended-packages"
+    configure_flags="--with-valgrind-instrumentation=2 --without-recommended-packages --with-system-valgrind-headers"
 
-elif [[ $1 = "san" ]]; then
+elif [[ "$1" = "san" ]]; then
     suffix="san"
-    configure_flags="--without-recommended-packages"
+    configure_flags="--without-recommended-packages --disable-openmp"
     # Settings borrowed from:
     # http://www.stats.ox.ac.uk/pub/bdr/memtests/README.txt
     # https://github.com/rocker-org/r-devel-san/blob/master/Dockerfile
@@ -48,6 +48,38 @@ elif [[ $1 = "san" ]]; then
     # Did not copy over ~/.R/Makevars from BDR's page because other R
     # installations would also read that file, and packages built for those
     # other R installations would inherit settings meant for this build.
+
+elif [[ "$1" = "csan" ]]; then
+    suffix="csan"
+    configure_flags="--without-recommended-packages --disable-openmp"
+    # Settings borrowed from:
+    # http://www.stats.ox.ac.uk/pub/bdr/memtests/README.txt
+    # https://github.com/rocker-org/r-devel-san/blob/master/Dockerfile
+    export CC="clang -fsanitize=address,undefined -fno-sanitize=float-divide-by-zero -fno-omit-frame-pointer"
+    export CXX="clang++ -fsanitize=address,undefined -fno-sanitize=float-divide-by-zero -fno-omit-frame-pointer -frtti"
+    export CFLAGS="-g -O3 -Wall -pedantic"
+    export FFLAGS="-g -O2"
+    export FCFLAGS="-g -O2"
+    export CXXFLAGS="-g -O3 -Wall -pedantic"
+    export CXXSTD=-std=gnu++98
+    export MAIN_LD="clang++ -fsanitize=undefined,address"
+
+    # Using -no-pie is a workaround for a kernel bug with ASAN which is
+    # present on Docker Hub build machines. From:
+    # https://github.com/google/sanitizers/issues/856#issuecomment-327657374
+    # Once the Docker Hub build machines get a new kernel (other than
+    # 4.4.0-93-generic), this can be removed.
+    if [[ "$(uname -r)" = "4.4.0-93-generic" ]]; then
+        export CC="${CC} -no-pie"
+        # Need -shared to come after -no-pie when creating shared libraries.
+        # https://gcc.gnu.org/bugzilla/show_bug.cgi?id=77464
+        export DYLIB_LDFLAGS="-shared"
+    fi
+
+    # Did not copy over ~/.R/Makevars from BDR's page because other R
+    # installations would also read that file, and packages built for those
+    # other R installations would inherit settings meant for this build.
+
 elif [[ "$1" = "strictbarrier" ]]; then
     suffix="strictbarrier"
     configure_flags="--enable-strict-barrier --without-recommended-packages"

@@ -15,7 +15,8 @@ This repository contains a Dockerfile for creating an Docker image, `wch1/r-debu
 * `R`: The current release version of R.
 * `RD`: The current development version of R (R-devel). This version is compiled without optimizations (`-O0`), so a debugger can be used to inspect the code as written, instead of an optimized version of the code which may be significantly different.
 * `RDvalgrind`: R-devel compiled with valgrind level 2 instrumentation. This should be started with `RDvalgrind -d valgrind`.
-* `RDsan`: R-devel compiled with Address Sanitizer and Undefined Behavior Sanitizer.
+* `RDsan`: R-devel compiled with gcc, Address Sanitizer and Undefined Behavior Sanitizer.
+* `RDcsan`: R-devel compiled with clang, Address Sanitizer and Undefined Behavior Sanitizer.
 * `RDstrictbarrier`: R-devel compiled with `--enable-strict-barrier`. This can be used with `gctorture(TRUE)`, or `gctorture2(1, inhibit_release=TRUE)`.
 * `RDassertthread`: R-devel, with a patch that detects if memory management functions are called from the wrong thread.
 
@@ -47,6 +48,7 @@ This builds a number of intermediate Docker images, in this order:
 * wch1/r-debug-1
 * wch1/r-debug-2
 * wch1/r-debug-3
+* wch1/r-debug-4
 * wch1/r-debug
 
 Only the last one, wch1/r-debug, is needed in the end, and it contains all the various builds of R. The reason it is split up into intermediate Docker images is because building the several versions of R takes a long time, and doing it with a single Dockerfile causes timeouts with Docker Hub's automated build system.
@@ -65,6 +67,7 @@ RD
 # Or, to run one of the other builds:
 RDvalgrind -d valgrind
 RDsan
+RDcsan
 RDstrictbarrier
 RDassertthread
 ```
