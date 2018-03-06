@@ -39,7 +39,7 @@ docker pull wch1/r-debug
 Or you can build the image by cloning this repository, entering the directory, and running:
 
 ```
-./build.sh
+./buildall.sh
 ```
 
 This builds a number of intermediate Docker images, in this order:
