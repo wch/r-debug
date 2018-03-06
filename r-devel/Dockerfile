@@ -64,7 +64,10 @@ RUN apt-get update && apt-get install -y \
 # https://www.stats.ox.ac.uk/pub/bdr/memtests/README.txt
 # Set it as the default
 RUN update-alternatives --install /usr/bin/clang++ clang++ /usr/bin/clang++-5.0 100 \
-    && update-alternatives --install /usr/bin/clang clang /usr/bin/clang-5.0 100
+    && update-alternatives --install /usr/bin/clang clang /usr/bin/clang-5.0 100 \
+    && update-alternatives --install /usr/bin/lldb lldb /usr/bin/lldb-5.0 100 \
+    && update-alternatives --install /usr/bin/llvm-symbolizer llvm-symbolizer /usr/bin/llvm-symbolizer-5.0 100
+
 
 RUN echo 'options(\n\
   repos = c(CRAN = "https://cloud.r-project.org/"),\n\
