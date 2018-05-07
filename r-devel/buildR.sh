@@ -115,7 +115,7 @@ rm -f src/library/Recommended/Makefile
 ## Set Renviron to first use this version of R's site-library/, then library/,
 ## then use "vanilla" RD installation's library/. This makes it so we don't
 ## have to install recommended packages for every single flavor of R-devel.
-echo "R_LIBS=\${R_LIBS-'/usr/local/${dirname}/lib/R/site-library:/usr/local/${dirname}/lib/R/library:/usr/local/RD/lib/R/library'}
+echo "R_LIBS_SITE=\${R_LIBS_SITE-'/usr/local/${dirname}/lib/R/site-library:/usr/local/${dirname}/lib/R/library:/usr/local/RD/lib/R/library'}
 R_LIBS_USER=~/${dirname}
 MAKEFLAGS='--jobs=4'" \
     >> /usr/local/${dirname}/lib/R/etc/Renviron
