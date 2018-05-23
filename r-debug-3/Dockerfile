@@ -16,4 +16,4 @@ RUN /tmp/buildR.sh csan
 # Error: compilation failed -  C stack usage  8042720 is too close to the limit at NULL
 RUN sed -i 's/^#!\/bin\/bash/#!\/bin\/bash\nulimit -Ss 32768/' /usr/local/bin/RDcsan
 
-RUN RDcsan -q -e 'install.packages(c("devtools", "Rcpp"))'
+RUN RDcsan -q -e 'install.packages(c("devtools", "Rcpp", "roxygen2", "testthat"))'

@@ -9,4 +9,4 @@ FROM wch1/r-debug-1
 ENV ASAN_OPTIONS 'alloc_dealloc_mismatch=0:detect_leaks=0:detect_odr_violation=0:malloc_context_size=200'
 ENV RGL_USE_NULL true
 RUN /tmp/buildR.sh san
-RUN RDsan -q -e 'install.packages(c("devtools", "Rcpp"))'
+RUN RDsan -q -e 'install.packages(c("devtools", "Rcpp", "roxygen2", "testthat"))'

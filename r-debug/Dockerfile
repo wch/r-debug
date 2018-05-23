@@ -8,4 +8,4 @@ FROM wch1/r-debug-4
 COPY assertthread.patch /tmp/r-source
 RUN (cd /tmp/r-source && patch -p0 < assertthread.patch)
 RUN /tmp/buildR.sh assertthread
-RUN RDassertthread -q -e 'install.packages(c("devtools", "Rcpp"))'
+RUN RDassertthread -q -e 'install.packages(c("devtools", "Rcpp", "roxygen2", "testthat"))'

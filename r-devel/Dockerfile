@@ -87,7 +87,7 @@ RUN wget -qO- \
     && tlmgr install metafont mfware inconsolata tex ae parskip listings \
     && tlmgr path add \
     && Rscript -e "source('https://install-github.me/yihui/tinytex'); tinytex::r_texmf()"
-    
+
 
 # =====================================================================
 # Install various versions of R-devel
@@ -117,4 +117,11 @@ COPY buildR.sh /tmp
 # RD* installation, and code is compiled with whatever compiler settings are
 # used for each RD* installation.
 RUN /tmp/buildR.sh
-RUN RD -q -e 'install.packages(c("devtools", "Rcpp"))'
+
+# Install some commonly-used packages to a location used by all the RD*
+# installations. These packages do not have compiled code and do not depend on
+# packages that have compiled code.
+RUN RD -q -e 'install.packages(c("BH", "R6", "magrittr", "memoise"), "/usr/local/RD/lib/R/library")'
+
+# Finally, install some common packages specific to this build of R.
+RUN RD -q -e 'install.packages(c("devtools", "Rcpp", "roxygen2", "testthat"))'
