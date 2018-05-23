@@ -22,7 +22,7 @@ This repository contains a Dockerfile for creating an Docker image, `wch1/r-debu
 
 See [Writing R Extensions](https://cran.r-project.org/doc/manuals/r-release/R-exts.html#Checking-memory-access) for more information about these builds (except the assert-thread build, which uses a patch that I wrote.)
 
-Each of the builds of R has its own library, so that a package installed with one build will not be accidentally used by another (With the exception of base R's "recommended packages". If you want to know the details, see the Dockerfile.) Each build of R comes with devtools and Rcpp installed.
+Each of the builds of R has its own library, so that a package installed with one build will not be accidentally used by another (With the exception of base R's "recommended packages". If you want to know the details, see the Dockerfile.) Each build of R comes with devtools and Rcpp installed, as well as a few other supporting packages.
 
 
 ## Usage
@@ -94,3 +94,10 @@ docker run --rm -ti --name rd --security-opt seccomp=unconfined wch1/r-debug
 # In another terminal, get a bash prompt in the container
 docker exec -ti rd /bin/bash
 ```
+
+
+### Notes
+
+All of the builds of R-devel in this image are compiled with `-D_GLIBCXX_DEBUG`, which enables debug mode for libstdc++. This flag will be passed along to packages that are built for each R build. From the [debug mode documentation](https://gcc.gnu.org/onlinedocs/libstdc++/manual/debug_mode.html):
+
+> Note that this flag changes the sizes and behavior of standard class templates such as std::vector, and therefore you can only link code compiled with debug mode and code compiled without debug mode if no instantiation of a container is passed between the two translation units.

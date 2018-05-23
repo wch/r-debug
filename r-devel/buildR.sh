@@ -2,11 +2,11 @@
 set -e -x
 
 # Env vars used by configure. These settings are from `R CMD config CFLAGS`
-# and CXXFLAGS, but without `-O2` and `-fdebug-prefix-map=...`m, and with -g
-# and -O0.
+# and CXXFLAGS, but without `-O2` and `-fdebug-prefix-map=...`, and with `-g`,
+# `-O0`, `-DNDEBUG`, and `-D_GLIBCXX_DEBUG`.
 export LIBnn=lib
-export CFLAGS="-fstack-protector-strong -Wformat -Werror=format-security -Wdate-time -D_FORTIFY_SOURCE=2 -g -O0 -Wall"
-export CXXFLAGS="-fstack-protector-strong -Wformat -Werror=format-security -Wdate-time -D_FORTIFY_SOURCE=2 -g -O0 -Wall"
+export CFLAGS="-fstack-protector-strong -Wformat -Werror=format-security -Wdate-time -D_FORTIFY_SOURCE=2 -D_GLIBCXX_DEBUG -g -O0 -Wall"
+export CXXFLAGS="-fstack-protector-strong -Wformat -Werror=format-security -Wdate-time -D_FORTIFY_SOURCE=2 -D_GLIBCXX_DEBUG -g -O0 -Wall"
 export R_BATCHSAVE="--no-save --no-restore"
 
 # =============================================================================
