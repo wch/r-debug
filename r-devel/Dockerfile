@@ -6,7 +6,7 @@
 
 # Use a very recent version of Ubuntu to get the latest GCC, which we need for
 # some of options used for ASAN builds.
-FROM ubuntu:17.10
+FROM ubuntu:18.04
 
 MAINTAINER Winston Chang "winston@rstudio.com"
 
@@ -15,19 +15,20 @@ MAINTAINER Winston Chang "winston@rstudio.com"
 # =====================================================================
 
 # Don't print "debconf: unable to initialize frontend: Dialog" messages
-ARG DEBIAN_FRONTED=noninteractive
+ARG DEBIAN_FRONTEND=noninteractive
 
 # Need this to add R repo
 RUN apt-get update && apt-get install -y software-properties-common
 
 # Add R apt repository
-RUN add-apt-repository "deb http://cran.r-project.org/bin/linux/ubuntu $(lsb_release -cs)/"
 RUN apt-key adv --keyserver keyserver.ubuntu.com --recv-keys E084DAB9
+RUN add-apt-repository "deb http://cran.r-project.org/bin/linux/ubuntu $(lsb_release -cs)-cran35/"
 
 # Install basic stuff, R, and other packages that are useful for compiling R
 # and R packages.
 RUN apt-get update && apt-get install -y \
     sudo \
+    locales \
     git \
     vim-tiny \
     less \
@@ -56,17 +57,12 @@ RUN apt-get update && apt-get install -y \
     xvfb \
     gdb \
     valgrind \
-    clang-5.0 \
-    lldb-5.0
+    clang \
+    lldb
 
-# clang 5.0 is the newest available for Ubuntu 17.10, but the R clang-UBSAN
-# test machine uses 6.0.0rc.
-# https://www.stats.ox.ac.uk/pub/bdr/memtests/README.txt
-# Set it as the default
-RUN update-alternatives --install /usr/bin/clang++ clang++ /usr/bin/clang++-5.0 100 \
-    && update-alternatives --install /usr/bin/clang clang /usr/bin/clang-5.0 100 \
-    && update-alternatives --install /usr/bin/lldb lldb /usr/bin/lldb-5.0 100 \
-    && update-alternatives --install /usr/bin/llvm-symbolizer llvm-symbolizer /usr/bin/llvm-symbolizer-5.0 100
+RUN locale-gen en_US.utf8 \
+    && /usr/sbin/update-locale LANG=en_US.UTF-8
+ENV LANG=en_US.UTF-8
 
 
 RUN echo 'options(\n\
