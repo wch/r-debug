@@ -48,6 +48,7 @@ This builds a number of intermediate Docker images, in this order:
 * wch1/r-debug-1
 * wch1/r-debug-2
 * wch1/r-debug-3
+* wch1/r-debug-3.5
 * wch1/r-debug-4
 * wch1/r-debug
 
