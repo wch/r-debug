@@ -6,7 +6,7 @@ Status at Docker Hub: [wch1/r-debug](https://hub.docker.com/r/wch1/r-debug/)
 Docker image for debugging R memory problems
 ============================================
 
-The document [debugging-r.md](debugging-r.md) document contains information about diagnosing bugs in C and C++ code that interfaces with R.
+The [debugging-r.md](debugging-r.md) document contains information about diagnosing bugs in C and C++ code that interfaces with R.
 
 This repository contains a Dockerfile for creating an Docker image, `wch1/r-debug` with the following tools and builds of R:
 
@@ -26,6 +26,34 @@ Each of the builds of R has its own library, so that a package installed with on
 
 
 ## Usage
+
+
+### Quick start
+
+If you just want to get started quickly, run this to pull the image and start a container:
+
+```
+docker run --rm -ti --security-opt seccomp=unconfined wch1/r-debug
+```
+
+The SAN build of R-devel can detect many types of memory problems with a relatively small performance penalty, compared to some of the other builds of R. You can run it with:
+
+```
+RDsan
+```
+
+Inside of this R session, install packages and run your code. It will automatically detect memory errors and print out diagnostic information.
+
+The Clang-SAN build also has low overhead. You can start it with:
+
+```
+RDcsan
+```
+
+Note that you'll have to install packages separately for each build of R.
+
+
+For more details about getting the Docker image and starting containser, see below. Also read the [debugging-r.md](debugging-r.md) document for much more information about the various builds of R and different kinds of memory problems you may encounter.
 
 
 ### Getting the Docker image
@@ -95,10 +123,3 @@ docker run --rm -ti --name rd --security-opt seccomp=unconfined wch1/r-debug
 # In another terminal, get a bash prompt in the container
 docker exec -ti rd /bin/bash
 ```
-
-
-### Notes
-
-All of the builds of R-devel in this image are compiled with `-D_GLIBCXX_DEBUG`, which enables debug mode for libstdc++. This flag will be passed along to packages that are built for each R build. From the [debug mode documentation](https://gcc.gnu.org/onlinedocs/libstdc++/manual/debug_mode.html):
-
-> Note that this flag changes the sizes and behavior of standard class templates such as std::vector, and therefore you can only link code compiled with debug mode and code compiled without debug mode if no instantiation of a container is passed between the two translation units.
