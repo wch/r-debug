@@ -72,7 +72,7 @@ The r-debug docker image contains the following:
 * `RDsan`: R-devel compiled with gcc, Address Sanitizer and Undefined Behavior Sanitizer.
 * `RDcsan`: R-devel compiled with clang, Address Sanitizer and Undefined Behavior Sanitizer.
 * `RDstrictbarrier`: R-devel compiled with `--enable-strict-barrier`. This can be used with `gctorture(TRUE)`, or `gctorture2(1, inhibit_release=TRUE)`.
-* `RDassertthread`: R-devel, with a patch that detects if memory management functions are called from the wrong thread.
+* `RDthreadcheck`: R-devel compiled with `-DTHREADCHECK`, which causes it to detect if memory management functions are called from the wrong thread.
 
 Each of the builds of R has its own libpath, so that a package installed with one build will not be accidentally used by another. Each one comes with devtools and Rcpp installed.
 

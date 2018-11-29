@@ -72,10 +72,10 @@ elif [[ "$1" = "strictbarrier" ]]; then
     suffix="strictbarrier"
     configure_flags="--enable-strict-barrier --without-recommended-packages"
 
-elif [[ "$1" = "assertthread" ]]; then
-    suffix="assertthread"
-    export CFLAGS="${CFLAGS} -DDEBUG_THREAD -UNDEBUG"
-    export CXXFLAGS="${CXXFLAGS} -DDEBUG_THREAD -UNDEBUG"
+elif [[ "$1" = "threadcheck" ]]; then
+    suffix="threadcheck"
+    export CFLAGS="${CFLAGS} -DTHREADCHECK"
+    export CXXFLAGS="${CXXFLAGS} -DTHREADCHECK"
     configure_flags="--without-recommended-packages"
 fi
 

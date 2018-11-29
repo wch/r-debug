@@ -18,9 +18,10 @@ This repository contains a Dockerfile for creating an Docker image, `wch1/r-debu
 * `RDsan`: R-devel compiled with gcc, Address Sanitizer and Undefined Behavior Sanitizer.
 * `RDcsan`: R-devel compiled with clang, Address Sanitizer and Undefined Behavior Sanitizer.
 * `RDstrictbarrier`: R-devel compiled with `--enable-strict-barrier`. This can be used with `gctorture(TRUE)`, or `gctorture2(1, inhibit_release=TRUE)`.
-* `RDassertthread`: R-devel, with a patch that detects if memory management functions are called from the wrong thread.
+* `RDthreadcheck`: R-devel compiled with `-DTHREADCHECK`, which causes it to detect if memory management functions are called from the wrong thread.
 
-See [Writing R Extensions](https://cran.r-project.org/doc/manuals/r-release/R-exts.html#Checking-memory-access) for more information about these builds (except the assert-thread build, which uses a patch that I wrote.)
+
+See [Writing R Extensions](https://cran.r-project.org/doc/manuals/r-release/R-exts.html#Checking-memory-access) for more information about these builds (except for the threadcheck build, which is not documented there.)
 
 Each of the builds of R has its own library, so that a package installed with one build will not be accidentally used by another (With the exception of base R's "recommended packages". If you want to know the details, see the Dockerfile.) Each build of R comes with devtools and Rcpp installed, as well as a few other supporting packages.
 
@@ -98,7 +99,7 @@ RDvalgrind -d valgrind
 RDsan
 RDcsan
 RDstrictbarrier
-RDassertthread
+RDthreadcheck
 ```
 
 The `--security-opt seccomp=unconfined` is needed to use `gdb` in the container. Without it, you'll see a message like `warning: Error disabling address space randomization: Operation not permitted`, and R will fail to start in the debugger.

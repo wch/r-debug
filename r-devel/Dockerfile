@@ -80,7 +80,7 @@ RUN wget -qO- \
     "https://github.com/yihui/tinytex/raw/master/tools/install-unx.sh" | \
     sh -s - --admin --no-path \
     && ~/.TinyTeX/bin/*/tlmgr path add \
-    && tlmgr install metafont mfware inconsolata tex ae parskip listings \
+    && tlmgr install metafont mfware inconsolata tex ae parskip listings xcolor \
     && tlmgr path add \
     && Rscript -e "source('https://install-github.me/yihui/tinytex'); tinytex::r_texmf()"
 
