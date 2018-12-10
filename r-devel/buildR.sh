@@ -33,17 +33,6 @@ elif [[ "$1" = "san" ]]; then
     export FCFLAGS="-g -O0"
     export CXXFLAGS="${CXXFLAGS} -pedantic"
     export MAIN_LDFLAGS="-fsanitize=address,undefined"
-    # Using -no-pie is a workaround for a kernel bug with ASAN which is
-    # present on Docker Hub build machines. From:
-    # https://github.com/google/sanitizers/issues/856#issuecomment-327657374
-    # Once the Docker Hub build machines get a new kernel (other than
-    # 4.4.0-93-generic), this can be removed.
-    if [[ "$(uname -r)" = "4.4.0-93-generic" ]]; then
-        export CC="gcc -no-pie"
-        # Need -shared to come after -no-pie when creating shared libraries.
-        # https://gcc.gnu.org/bugzilla/show_bug.cgi?id=77464
-        export DYLIB_LDFLAGS="-shared"
-    fi
 
     # Did not copy over ~/.R/Makevars from BDR's page because other R
     # installations would also read that file, and packages built for those
