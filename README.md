@@ -1,4 +1,4 @@
-**Note 2019-05-08: I'm currently having trouble getting Docker Hub to build the wch1/r-debug image ([#12](https://github.com/wch/r-debug/issues/12)). Until that is fixed, you are best off cloning this repository and running `./buildall.sh` to build the Docker images on your computer.
+**Note 2019-05-08: I'm currently having trouble getting Docker Hub to build the wch1/r-debug image ([#12](https://github.com/wch/r-debug/issues/12)). Until that is fixed, you are best off cloning this repository and running `./buildall.sh` to build the Docker images on your computer.**
 
 
 [![](https://images.microbadger.com/badges/image/wch1/r-debug.svg)](https://microbadger.com/images/wch1/r-debug)
