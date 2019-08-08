@@ -82,7 +82,7 @@ This builds a number of intermediate Docker images, in this order:
 * wch1/r-debug-4
 * wch1/r-debug
 
-Only the last one, wch1/r-debug, is needed in the end, and it contains all the various builds of R. The reason it is split up into intermediate Docker images is because building the several versions of R takes a long time, and doing it with a single Dockerfile causes timeouts with Docker Hub's automated build system.
+Only the last one, wch1/r-debug, is needed in the end, and it contains all the various builds of R. The reason it is split up into intermediate Docker images is because building the several versions of R takes a long time, and doing it with a single Dockerfile causes timeouts with Docker Hub's automated build system. (As of 2019-08, it is no longer built with the Docker Hub automated build system; instead it is built on a local computer and pushed to Docker Hub. The intermediate steps could therefore be consolidated into a single step.)
 
 
 ### Running containers
