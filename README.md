@@ -84,6 +84,14 @@ This builds a number of intermediate Docker images, in this order:
 
 Only the last one, wch1/r-debug, is needed in the end, and it contains all the various builds of R. The reason it is split up into intermediate Docker images is because building the several versions of R takes a long time, and doing it with a single Dockerfile causes timeouts with Docker Hub's automated build system. (As of 2019-08, it is no longer built with the Docker Hub automated build system; instead it is built on a local computer and pushed to Docker Hub. The intermediate steps could therefore be consolidated into a single step.)
 
+If you have previously built Docker images and want to start over without using the cached images, use:
+
+```
+./buildall.sh --rebuild
+```
+
+This causes `docker build` to be run with `--no-cache` for the first Docker image in the chain. The rest of the images will then be built from scratch.
+
 
 ### Running containers
 
