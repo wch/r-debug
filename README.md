@@ -1,7 +1,5 @@
 [![](https://images.microbadger.com/badges/image/wch1/r-debug.svg)](https://microbadger.com/images/wch1/r-debug)
 
-Status at Docker Hub: [wch1/r-debug](https://hub.docker.com/r/wch1/r-debug/)
-
 As of 2019-08-08, the following Docker images are built daily and pushed to Docker Hub.
 
 * [wch1/r-devel](https://hub.docker.com/r/wch1/r-devel/) contains just the current development version of R.
