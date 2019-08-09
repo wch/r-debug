@@ -8,7 +8,7 @@ As of 2019-08-08, the following Docker images are built daily and pushed to Dock
 Docker image for debugging R memory problems
 ============================================
 
-The [debugging-r.md](debugging-r.md) document contains information about diagnosing bugs in C and C++ code that interfaces with R.
+See [debugging-r.md](debugging-r.md) for in-depth information about diagnosing bugs in C and C++ code that interfaces with R.
 
 This repository contains a Dockerfile for creating an Docker image, `wch1/r-debug` with the following tools and builds of R:
 
