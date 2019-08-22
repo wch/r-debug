@@ -69,7 +69,7 @@ ENV LANG=en_US.UTF-8
 RUN update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-8 800 \
     --slave /usr/bin/g++ g++ /usr/bin/g++-8
 
-RUN update-alternatives --install /usr/bin/clang clang /usr/bin/clang-7 700 \
+RUN update-alternatives --install /usr/bin/clang clang /usr/bin/clang-7 800 \
     --slave /usr/bin/clang++ clang++ /usr/bin/clang++-7 \
     --slave /usr/bin/llvm-symbolizer llvm-symbolizer /usr/bin/llvm-symbolizer-7
 
