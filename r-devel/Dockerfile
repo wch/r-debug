@@ -30,7 +30,7 @@ RUN apt-get update && apt-get install -y \
     sudo \
     locales \
     git \
-    vim-tiny \
+    vim \
     less \
     wget \
     r-base \
