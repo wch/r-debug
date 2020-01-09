@@ -90,7 +90,7 @@ RUN wget -qO- \
     sh -s - --admin --no-path \
     && ~/.TinyTeX/bin/*/tlmgr path add \
     && tlmgr install metafont mfware inconsolata tex ae parskip listings xcolor \
-             epstopdf-pkg pdftexcmds kvoptions \
+             epstopdf-pkg pdftexcmds kvoptions texlive-scripts \
     && tlmgr path add \
     && Rscript -e "source('https://install-github.me/yihui/tinytex'); tinytex::r_texmf()"
 
