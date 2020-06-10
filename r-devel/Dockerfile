@@ -86,13 +86,13 @@ RUN echo 'options(\n\
 # From FAQ 5 and 6 here: https://yihui.name/tinytex/faq/
 # Also install ae, parskip, and listings packages to build R vignettes
 RUN wget -qO- \
-    "https://github.com/yihui/tinytex/raw/master/tools/install-unx.sh" | \
+    "https://yihui.org/gh/tinytex/tools/install-unx.sh" | \
     sh -s - --admin --no-path \
     && ~/.TinyTeX/bin/*/tlmgr path add \
     && tlmgr install metafont mfware inconsolata tex ae parskip listings xcolor \
              epstopdf-pkg pdftexcmds kvoptions texlive-scripts grfext \
     && tlmgr path add \
-    && Rscript -e "source('https://install-github.me/yihui/tinytex'); tinytex::r_texmf()"
+    && Rscript -e "install.packages('tinytex'); tinytex::r_texmf()"
 
 
 # =====================================================================
