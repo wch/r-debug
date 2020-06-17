@@ -6,7 +6,7 @@
 
 # Use a very recent version of Ubuntu to get the latest GCC, which we need for
 # some of options used for ASAN builds.
-FROM ubuntu:18.04
+FROM ubuntu:20.04
 
 MAINTAINER Winston Chang "winston@rstudio.com"
 
@@ -22,7 +22,7 @@ RUN apt-get update && apt-get install -y software-properties-common
 
 # Add R apt repository
 RUN apt-key adv --keyserver keyserver.ubuntu.com --recv-keys E298A3A825C0D65DFD57CBB651716619E084DAB9
-RUN add-apt-repository "deb http://cran.r-project.org/bin/linux/ubuntu $(lsb_release -cs)-cran35/"
+RUN add-apt-repository "deb http://cran.r-project.org/bin/linux/ubuntu $(lsb_release -cs)-cran40/"
 
 # Install basic stuff, R, and other packages that are useful for compiling R
 # and R packages.
