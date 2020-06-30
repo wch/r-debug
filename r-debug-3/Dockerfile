@@ -20,9 +20,9 @@ ENV UBSAN_OPTIONS 'print_stacktrace=1'
 ENV RGL_USE_NULL true
 RUN /tmp/buildR.sh csan
 
-# Modify the RDcsan script to increase stack size with `ulimit -Ss 65532`;
+# Modify the RDcsan script to increase stack size with `ulimit -Ss 131072`;
 # otherwise we get these messages during package compilation:
 # Error: compilation failed -  C stack usage  8042720 is too close to the limit at NULL
-RUN sed -i 's/^#!\/bin\/bash/#!\/bin\/bash\nulimit -Ss 65532/' /usr/local/bin/RDcsan
+RUN sed -i 's/^#!\/bin\/bash/#!\/bin\/bash\nulimit -Ss 131072/' /usr/local/bin/RDcsan
 
 RUN RDcsan -q -e 'install.packages(c("devtools", "Rcpp", "roxygen2", "testthat"))'
