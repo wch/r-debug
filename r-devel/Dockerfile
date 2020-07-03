@@ -60,7 +60,8 @@ RUN apt-get update && apt-get install -y \
     gdb \
     valgrind \
     clang-7 \
-    lldb-7
+    lldb-7 \
+    devscripts
 
 RUN locale-gen en_US.utf8 \
     && /usr/sbin/update-locale LANG=en_US.UTF-8
