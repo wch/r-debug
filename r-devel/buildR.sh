@@ -18,7 +18,7 @@ if [[ $# -eq 0 ]]; then
 
 elif [[ "$1" = "valgrind" ]]; then
     suffix="valgrind"
-    configure_flags="--with-valgrind-instrumentation=2 --without-recommended-packages --with-system-valgrind-headers"
+    configure_flags="-C --with-valgrind-instrumentation=2 --without-recommended-packages --with-system-valgrind-headers"
 
 elif [[ "$1" = "san" ]]; then
     suffix="san"
@@ -29,10 +29,11 @@ elif [[ "$1" = "san" ]]; then
     # But without -mtune=native because the Docker image needs to be portable.
     export CXX="g++ -fsanitize=address,undefined,bounds-strict -fno-omit-frame-pointer"
     export CFLAGS="${CFLAGS} -pedantic -fsanitize=address"
+    export DEFS=-DSWITCH_TO_REFCNT
     export FFLAGS="-g -O0"
     export FCFLAGS="-g -O0"
-    export CXXFLAGS="${CXXFLAGS} -pedantic"
-    export MAIN_LDFLAGS="-fsanitize=address,undefined"
+    export CXXFLAGS="${CXXFLAGS} -Wall -pedantic"
+    export MAIN_LDFLAGS="-fsanitize=address,undefined -pthread"
 
     # Did not copy over ~/.R/Makevars from BDR's page because other R
     # installations would also read that file, and packages built for those
@@ -44,13 +45,11 @@ elif [[ "$1" = "csan" ]]; then
     # Settings borrowed from:
     # http://www.stats.ox.ac.uk/pub/bdr/memtests/README.txt
     # https://github.com/rocker-org/r-devel-san/blob/master/Dockerfile
-    export CC="clang -fsanitize=address,undefined -fno-sanitize=float-divide-by-zero -fno-omit-frame-pointer"
-    export CXX="clang++ -fsanitize=address,undefined -fno-sanitize=float-divide-by-zero -fno-omit-frame-pointer -frtti"
+    export CC="clang -fsanitize=address,undefined -fno-sanitize=float-divide-by-zero -fno-sanitize=alignment -fno-omit-frame-pointer"
+    export CXX="clang++ -fsanitize=address,undefined -fno-sanitize=float-divide-by-zero -fno-sanitize=alignment -fno-omit-frame-pointer -frtti"
     export CFLAGS="-g -O0 -Wall -pedantic"
     export FFLAGS="-g -O0"
-    export FCFLAGS="-g -O0"
     export CXXFLAGS="-g -O0 -Wall -pedantic"
-    export CXXSTD=-std=gnu++98
     export MAIN_LD="clang++ -fsanitize=undefined,address"
 
     # Did not copy over ~/.R/Makevars from BDR's page because other R
