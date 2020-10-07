@@ -55,24 +55,24 @@ RUN apt-get update && apt-get install -y \
     tk8.6-dev \
     xfonts-base \
     xvfb \
-    gcc-8 \
-    g++-8 \
+    gcc-10 \
+    g++-10 \
     gdb \
     valgrind \
-    clang-7 \
-    lldb-7 \
+    clang-10 \
+    lldb-10 \
     devscripts
 
 RUN locale-gen en_US.utf8 \
     && /usr/sbin/update-locale LANG=en_US.UTF-8
 ENV LANG=en_US.UTF-8
 
-RUN update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-8 800 \
-    --slave /usr/bin/g++ g++ /usr/bin/g++-8
+RUN update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-10 800 \
+    --slave /usr/bin/g++ g++ /usr/bin/g++-10
 
-RUN update-alternatives --install /usr/bin/clang clang /usr/bin/clang-7 800 \
-    --slave /usr/bin/clang++ clang++ /usr/bin/clang++-7 \
-    --slave /usr/bin/llvm-symbolizer llvm-symbolizer /usr/bin/llvm-symbolizer-7
+RUN update-alternatives --install /usr/bin/clang clang /usr/bin/clang-10 800 \
+    --slave /usr/bin/clang++ clang++ /usr/bin/clang++-10 \
+    --slave /usr/bin/llvm-symbolizer llvm-symbolizer /usr/bin/llvm-symbolizer-10
 
 
 RUN echo 'options(\n\
