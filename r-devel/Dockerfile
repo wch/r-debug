@@ -36,6 +36,8 @@ RUN apt-get update && apt-get install -y \
     r-base \
     r-base-dev \
     r-recommended \
+    automake \
+    libtool \
     fonts-texgyre \
     gdebi-core \
     pandoc \
@@ -45,6 +47,7 @@ RUN apt-get update && apt-get install -y \
     libpango1.0-dev \
     libxt-dev \
     libssl-dev \
+    libgit2-dev \
     libxml2-dev \
     texinfo \
     rsync \
@@ -136,8 +139,8 @@ RUN /tmp/buildR.sh
 # Install some commonly-used packages to a location used by all the RD*
 # installations. These packages do not have compiled code and do not depend on
 # packages that have compiled code.
-RUN RD -q -e 'install.packages(c("BH", "R6", "magrittr", "memoise"), "/usr/local/RD/lib/R/library")'
 RUN RD -q -e 'install.packages("pak", repos = "https://r-lib.github.io/p/pak/dev/", "/usr/local/RD/lib/R/library")'
+RUN RD -q -e 'pak::pkg_install(c("BH", "R6", "magrittr", "memoise"), "/usr/local/RD/lib/R/library")'
 
 # Finally, install some common packages specific to this build of R.
-RUN RD -q -e 'install.packages(c("devtools", "Rcpp", "roxygen2", "testthat"))'
+RUN RD -q -e 'pak::pkg_install(c("devtools", "Rcpp", "roxygen2", "testthat"))'
