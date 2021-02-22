@@ -62,8 +62,8 @@ RUN apt-get update && apt-get install -y \
     g++-10 \
     gdb \
     valgrind \
-    clang-10 \
-    lldb-10 \
+    clang-11 \
+    lldb-11 \
     devscripts
 
 RUN locale-gen en_US.utf8 \
@@ -73,9 +73,9 @@ ENV LANG=en_US.UTF-8
 RUN update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-10 800 \
     --slave /usr/bin/g++ g++ /usr/bin/g++-10
 
-RUN update-alternatives --install /usr/bin/clang clang /usr/bin/clang-10 800 \
-    --slave /usr/bin/clang++ clang++ /usr/bin/clang++-10 \
-    --slave /usr/bin/llvm-symbolizer llvm-symbolizer /usr/bin/llvm-symbolizer-10
+RUN update-alternatives --install /usr/bin/clang clang /usr/bin/clang-11 800 \
+    --slave /usr/bin/clang++ clang++ /usr/bin/clang++-11 \
+    --slave /usr/bin/llvm-symbolizer llvm-symbolizer /usr/bin/llvm-symbolizer-11
 
 
 RUN echo 'options(\n\
