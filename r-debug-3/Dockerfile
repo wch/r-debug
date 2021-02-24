@@ -3,6 +3,7 @@
 
 FROM wch1/r-debug-2
 
+COPY buildR.sh /tmp
 RUN /tmp/buildR.sh csan
 
 # Modify the RDcsan script to increase stack size with `ulimit -Ss 131072`;
