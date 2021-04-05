@@ -4,4 +4,4 @@
 FROM wch1/r-debug-1
 
 RUN /tmp/buildR.sh san
-RUN RDsan -q -e 'install.packages(c("devtools", "Rcpp", "roxygen2", "testthat"))'
+RUN RDsan -q -e 'pak::pkg_install(c("devtools", "Rcpp", "roxygen2", "testthat", "memoise", "rmarkdown"))'

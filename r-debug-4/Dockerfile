@@ -5,4 +5,4 @@ FROM wch1/r-debug-3
 
 # RDstrictbarrier: Make sure that R objects are protected properly.
 RUN /tmp/buildR.sh strictbarrier
-RUN RDstrictbarrier -q -e 'install.packages(c("devtools", "Rcpp", "roxygen2", "testthat"))'
+RUN RDstrictbarrier -q -e 'pak::pkg_install(c("devtools", "Rcpp", "roxygen2", "testthat", "memoise", "rmarkdown"))'

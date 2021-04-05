@@ -140,7 +140,7 @@ RUN /tmp/buildR.sh
 # installations. These packages do not have compiled code and do not depend on
 # packages that have compiled code.
 RUN RD -q -e 'install.packages("pak", repos = "https://r-lib.github.io/p/pak/dev/", "/usr/local/RD/lib/R/library")'
-RUN RD -q -e 'pak::pkg_install(c("BH", "R6", "magrittr", "memoise"), "/usr/local/RD/lib/R/library")'
+RUN RD -q -e 'pak::pkg_install(c("BH", "R6", "magrittr"), "/usr/local/RD/lib/R/library")'
 
 # Finally, install some common packages specific to this build of R.
-RUN RD -q -e 'pak::pkg_install(c("devtools", "Rcpp", "roxygen2", "testthat"))'
+RUN RD -q -e 'pak::pkg_install(c("devtools", "Rcpp", "roxygen2", "testthat", "memoise", "rmarkdown"))'
