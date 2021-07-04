@@ -18,7 +18,12 @@ MAINTAINER Winston Chang "winston@rstudio.com"
 ARG DEBIAN_FRONTEND=noninteractive
 
 # Need this to add R repo
-RUN apt-get update && apt-get install -y software-properties-common
+RUN apt-get update && apt-get install -y software-properties-common wget
+
+# LLVM-12
+
+RUN wget -O - https://apt.llvm.org/llvm-snapshot.gpg.key | apt-key add -
+RUN add-apt-repository "deb http://apt.llvm.org/focal/ llvm-toolchain-focal-12 main"
 
 # Add R apt repository
 RUN apt-key adv --keyserver keyserver.ubuntu.com --recv-keys E298A3A825C0D65DFD57CBB651716619E084DAB9
@@ -62,8 +67,8 @@ RUN apt-get update && apt-get install -y \
     g++-10 \
     gdb \
     valgrind \
-    clang-11 \
-    lldb-11 \
+    clang-12 \
+    lldb-12 \
     devscripts
 
 RUN locale-gen en_US.utf8 \
@@ -73,9 +78,9 @@ ENV LANG=en_US.UTF-8
 RUN update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-10 800 \
     --slave /usr/bin/g++ g++ /usr/bin/g++-10
 
-RUN update-alternatives --install /usr/bin/clang clang /usr/bin/clang-11 800 \
-    --slave /usr/bin/clang++ clang++ /usr/bin/clang++-11 \
-    --slave /usr/bin/llvm-symbolizer llvm-symbolizer /usr/bin/llvm-symbolizer-11
+RUN update-alternatives --install /usr/bin/clang clang /usr/bin/clang-12 800 \
+    --slave /usr/bin/clang++ clang++ /usr/bin/clang++-12 \
+    --slave /usr/bin/llvm-symbolizer llvm-symbolizer /usr/bin/llvm-symbolizer-12
 
 
 RUN echo 'options(\n\
