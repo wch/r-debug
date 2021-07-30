@@ -65,6 +65,10 @@ elif [[ "$1" = "threadcheck" ]]; then
     export CFLAGS="${CFLAGS} -DTHREADCHECK"
     export CXXFLAGS="${CXXFLAGS} -DTHREADCHECK"
     configure_flags="--without-recommended-packages"
+
+elif [[ "$1" = "lto" ]]; then
+    suffix="lto"
+    configure_flags="--enable-lto"
 fi
 
 dirname="RD${suffix}"

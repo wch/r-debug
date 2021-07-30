@@ -21,6 +21,7 @@ This repository contains a Dockerfile for creating an Docker image, `wch1/r-debu
 * `RDcsan`: R-devel compiled with clang, Address Sanitizer and Undefined Behavior Sanitizer.
 * `RDstrictbarrier`: R-devel compiled with `--enable-strict-barrier`. This can be used with `gctorture(TRUE)`, or `gctorture2(1, inhibit_release=TRUE)`.
 * `RDthreadcheck`: R-devel compiled with `-DTHREADCHECK`, which causes it to detect if memory management functions are called from the wrong thread.
+* `RDlto`: R-devel compiled with `--enable-lto`
 
 
 See [Writing R Extensions](https://cran.r-project.org/doc/manuals/r-release/R-exts.html#Checking-memory-access) for more information about these builds (except for the threadcheck build, which is not documented there.)
