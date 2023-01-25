@@ -6,7 +6,7 @@
 
 # Use a very recent version of Ubuntu to get the latest GCC, which we need for
 # some of options used for ASAN builds.
-FROM ubuntu:20.04
+FROM ubuntu:22.04
 
 MAINTAINER Winston Chang "winston@rstudio.com"
 
