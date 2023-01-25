@@ -18,16 +18,15 @@ MAINTAINER Winston Chang "winston@rstudio.com"
 ARG DEBIAN_FRONTEND=noninteractive
 
 # Need this to add R repo
-RUN apt-get update && apt-get install -y software-properties-common wget
+RUN apt-get update && apt-get install -y software-properties-common wget dirmngr
 
-# LLVM-12
-
+# LLVM-15
 RUN wget -O - https://apt.llvm.org/llvm-snapshot.gpg.key | apt-key add -
-RUN add-apt-repository "deb http://apt.llvm.org/focal/ llvm-toolchain-focal-12 main"
+RUN add-apt-repository "deb http://apt.llvm.org/jammy/ llvm-toolchain-jammy-15 main"
 
 # Add R apt repository
-RUN apt-key adv --keyserver keyserver.ubuntu.com --recv-keys E298A3A825C0D65DFD57CBB651716619E084DAB9
-RUN add-apt-repository "deb http://cran.r-project.org/bin/linux/ubuntu $(lsb_release -cs)-cran40/"
+RUN wget -qO- https://cloud.r-project.org/bin/linux/ubuntu/marutter_pubkey.asc | tee -a /etc/apt/trusted.gpg.d/cran_ubuntu_key.asc
+RUN add-apt-repository "deb http://cloud.r-project.org/bin/linux/ubuntu $(lsb_release -cs)-cran40/"
 
 # Install basic stuff, R, and other packages that are useful for compiling R
 # and R packages.
@@ -63,24 +62,24 @@ RUN apt-get update && apt-get install -y \
     tk8.6-dev \
     xfonts-base \
     xvfb \
-    gcc-10 \
-    g++-10 \
+    gcc-12 \
+    g++-12 \
     gdb \
     valgrind \
-    clang-12 \
-    lldb-12 \
+    clang-15 \
+    lldb-15 \
     devscripts
 
 RUN locale-gen en_US.utf8 \
     && /usr/sbin/update-locale LANG=en_US.UTF-8
 ENV LANG=en_US.UTF-8
 
-RUN update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-10 800 \
-    --slave /usr/bin/g++ g++ /usr/bin/g++-10
+RUN update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-12 800 \
+    --slave /usr/bin/g++ g++ /usr/bin/g++-12
 
-RUN update-alternatives --install /usr/bin/clang clang /usr/bin/clang-12 800 \
-    --slave /usr/bin/clang++ clang++ /usr/bin/clang++-12 \
-    --slave /usr/bin/llvm-symbolizer llvm-symbolizer /usr/bin/llvm-symbolizer-12
+RUN update-alternatives --install /usr/bin/clang clang /usr/bin/clang-15 800 \
+    --slave /usr/bin/clang++ clang++ /usr/bin/clang++-15 \
+    --slave /usr/bin/llvm-symbolizer llvm-symbolizer /usr/bin/llvm-symbolizer-15
 
 
 RUN echo 'options(\n\
