@@ -56,7 +56,7 @@ RDcsan
 Note that you'll have to install packages separately for each build of R.
 
 
-For more details about getting the Docker image and starting containser, see below. Also read the [debugging-r.md](debugging-r.md) document for much more information about the various builds of R and different kinds of memory problems you may encounter.
+For more details about getting the Docker image and starting containers, see below. Also read the [debugging-r.md](debugging-r.md) document for much more information about the various builds of R and different kinds of memory problems you may encounter.
 
 
 ### Getting the Docker image
