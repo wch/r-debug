@@ -143,7 +143,7 @@ RUN /tmp/buildR.sh
 # Install some commonly-used packages to a location used by all the RD*
 # installations. These packages do not have compiled code and do not depend on
 # packages that have compiled code.
-RUN RD -q -e 'install.packages("pak", repos = "https://r-lib.github.io/p/pak/dev/", "/usr/local/RD/lib/R/library")'
+RUN RD -q -e 'install.packages("pak", repos = sprintf("https://r-lib.github.io/p/pak/stable/%s/%s/%s", .Platform$pkgType, R.Version()$os, R.Version()$arch), "/usr/local/RD/lib/R/library")'
 RUN RD -q -e 'pak::pkg_install(c("BH", "R6", "magrittr"), "/usr/local/RD/lib/R/library")'
 
 # Finally, install some common packages specific to this build of R.
