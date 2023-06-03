@@ -17,16 +17,15 @@ MAINTAINER Winston Chang "winston@rstudio.com"
 # Don't print "debconf: unable to initialize frontend: Dialog" messages
 ARG DEBIAN_FRONTEND=noninteractive
 
+# https://blog.thesparktree.com/docker-multi-arch-github-actions
+ARG TARGETARCH
+
 # Need this to add R repo
 RUN apt-get update && apt-get install -y software-properties-common wget dirmngr
 
 # LLVM-15
 RUN wget -O - https://apt.llvm.org/llvm-snapshot.gpg.key | apt-key add -
 RUN add-apt-repository "deb http://apt.llvm.org/jammy/ llvm-toolchain-jammy-15 main"
-
-# Add R apt repository
-RUN wget -qO- https://cloud.r-project.org/bin/linux/ubuntu/marutter_pubkey.asc | tee -a /etc/apt/trusted.gpg.d/cran_ubuntu_key.asc
-RUN add-apt-repository "deb http://cloud.r-project.org/bin/linux/ubuntu $(lsb_release -cs)-cran40/"
 
 # Install basic stuff, R, and other packages that are useful for compiling R
 # and R packages.
@@ -37,9 +36,7 @@ RUN apt-get update && apt-get install -y \
     vim \
     less \
     wget \
-    r-base \
-    r-base-dev \
-    r-recommended \
+    curl \
     automake \
     libtool \
     fonts-texgyre \
@@ -82,26 +79,28 @@ RUN update-alternatives --install /usr/bin/clang clang /usr/bin/clang-15 800 \
     --slave /usr/bin/clang++ clang++ /usr/bin/clang++-15 \
     --slave /usr/bin/llvm-symbolizer llvm-symbolizer /usr/bin/llvm-symbolizer-15
 
+# https://blog.thesparktree.com/docker-multi-arch-github-actions
+RUN case ${TARGETARCH} in \
+            "amd64")  RIG_ARCH=  ;; \
+            "arm64")  RIG_ARCH=-arm64  ;; \
+            *) false ;; \
+        esac \
+    && curl -Ls https://github.com/r-lib/rig/releases/download/latest/rig-linux${RIG_ARCH}-latest.tar.gz | tar xz -C /usr/local \
+    && rig add
 
-RUN echo 'options(\n\
-  repos = c(CRAN = "https://cloud.r-project.org/"),\n\
-  download.file.method = "libcurl",\n\
-  # Detect number of physical cores\n\
-  Ncpus = parallel::detectCores(logical=FALSE)\n\
-)' >> /etc/R/Rprofile.site
-
+# Install some common packages specific to R-release
+RUN R -q -e 'pak::pkg_install(c("devtools", "Rcpp", "cpp11", "decor", "roxygen2", "testthat", "memoise", "rmarkdown", "tinytex"))'
 
 # Install TinyTeX (subset of TeXLive)
 # From FAQ 5 and 6 here: https://yihui.name/tinytex/faq/
 # Also install ae, parskip, and listings packages to build R vignettes
 RUN wget -qO- \
-    "https://yihui.org/gh/tinytex/tools/install-unx.sh" | \
-    sh -s - --admin --no-path \
+    "https://yihui.org/gh/tinytex/tools/install-unx.sh" | sh -s - --admin --no-path \
     && ~/.TinyTeX/bin/*/tlmgr path add \
     && tlmgr install metafont mfware inconsolata tex ae parskip listings xcolor \
              epstopdf-pkg pdftexcmds kvoptions texlive-scripts grfext \
     && tlmgr path add \
-    && Rscript -e "install.packages('tinytex'); tinytex::r_texmf()"
+    && Rscript -e "tinytex::r_texmf()"
 
 
 # =====================================================================
