@@ -53,6 +53,7 @@ RUN apt-get update && apt-get install -y \
     libssl-dev \
     libgit2-dev \
     libxml2-dev \
+    libreadline-dev \
     texinfo \
     rsync \
     default-jdk \
