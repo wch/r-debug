@@ -13,6 +13,7 @@ on:
   push:
     branches:
       - main
+      - latest
 
 env:
   REGISTRY: ghcr.io
@@ -44,12 +45,45 @@ jobs:
         with:
           images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
 
-      - name: Build and push Docker image
+      - name: "Build and push Docker image: r-devel"
         uses: docker/build-push-action@f2a1d5e99d037542a71f64918e516c093c6f3fc4
         with:
           context: r-devel
-          cache-from: type=gha
-          cache-to: type=gha,mode=max
+          tags: wch1/r-devel
+          labels: ${{ steps.meta.outputs.labels }}
+
+      - name: "Build and push Docker image: r-debug-1"
+        uses: docker/build-push-action@f2a1d5e99d037542a71f64918e516c093c6f3fc4
+        with:
+          context: r-debug-1
+          tags: wch1/r-debug-1
+          labels: ${{ steps.meta.outputs.labels }}
+
+      - name: "Build and push Docker image: r-debug-2"
+        uses: docker/build-push-action@f2a1d5e99d037542a71f64918e516c093c6f3fc4
+        with:
+          context: r-debug-2
+          tags: wch1/r-debug-2
+          labels: ${{ steps.meta.outputs.labels }}
+
+      - name: "Build and push Docker image: r-debug-3"
+        uses: docker/build-push-action@f2a1d5e99d037542a71f64918e516c093c6f3fc4
+        with:
+          context: r-debug-3
+          tags: wch1/r-debug-3
+          labels: ${{ steps.meta.outputs.labels }}
+
+      - name: "Build and push Docker image: r-debug-4"
+        uses: docker/build-push-action@f2a1d5e99d037542a71f64918e516c093c6f3fc4
+        with:
+          context: r-debug-4
+          tags: wch1/r-debug-4
+          labels: ${{ steps.meta.outputs.labels }}
+
+      - name: "Build and push Docker image: r-debug"
+        uses: docker/build-push-action@f2a1d5e99d037542a71f64918e516c093c6f3fc4
+        with:
+          context: r-debug
           push: true
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
