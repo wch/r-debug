@@ -1,7 +1,7 @@
 # To build from the parent directory:
 #   docker build -t wch1/r-debug-3 r-debug-3
 
-FROM wch1/r-debug-2
+FROM ghcr.io/cynkra/r-debug-2
 
 RUN /tmp/buildR.sh csan
 

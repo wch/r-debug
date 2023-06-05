@@ -49,31 +49,36 @@ jobs:
         uses: docker/build-push-action@f2a1d5e99d037542a71f64918e516c093c6f3fc4
         with:
           context: r-devel
-          tags: wch1/r-devel
+          push: true
+          tags: ghcr.io/cynkra/r-devel
 
       - name: "Build and push Docker image: r-debug-1"
         uses: docker/build-push-action@f2a1d5e99d037542a71f64918e516c093c6f3fc4
         with:
           context: r-debug-1
-          tags: wch1/r-debug-1
+          push: true
+          tags: ghcr.io/cynkra/r-debug-1
 
       - name: "Build and push Docker image: r-debug-2"
         uses: docker/build-push-action@f2a1d5e99d037542a71f64918e516c093c6f3fc4
         with:
           context: r-debug-2
-          tags: wch1/r-debug-2
+          push: true
+          tags: ghcr.io/cynkra/r-debug-2
 
       - name: "Build and push Docker image: r-debug-3"
         uses: docker/build-push-action@f2a1d5e99d037542a71f64918e516c093c6f3fc4
         with:
           context: r-debug-3
-          tags: wch1/r-debug-3
+          push: true
+          tags: ghcr.io/cynkra/r-debug-3
 
       - name: "Build and push Docker image: r-debug-4"
         uses: docker/build-push-action@f2a1d5e99d037542a71f64918e516c093c6f3fc4
         with:
           context: r-debug-4
-          tags: wch1/r-debug-4
+          push: true
+          tags: ghcr.io/cynkra/r-debug-4
 
       - name: "Build and push Docker image: r-debug"
         uses: docker/build-push-action@f2a1d5e99d037542a71f64918e516c093c6f3fc4
