@@ -47,9 +47,9 @@ elif [[ "$1" = "csan" ]]; then
     # https://github.com/rocker-org/r-devel-san/blob/master/Dockerfile
     export CC="clang -fsanitize=address,undefined -fno-sanitize=float-divide-by-zero -fno-sanitize=alignment -fno-omit-frame-pointer"
     export CXX="clang++ -fsanitize=address,undefined -fno-sanitize=float-divide-by-zero -fno-sanitize=alignment -fno-omit-frame-pointer -frtti"
-    export CFLAGS="-g -gdwarf-4 -O0 -Wall -pedantic"
-    export FFLAGS="-g -gdwarf-4 -O0"
-    export CXXFLAGS="-g -gdwarf-4 -O0 -Wall -pedantic"
+    export CFLAGS="-g -gdwarf-4 -Wno-c11-extensions -O0 -Wall -pedantic"
+    export FFLAGS="-g -gdwarf-4 -Wno-c11-extensions -O0"
+    export CXXFLAGS="-g -gdwarf-4 -Wno-c11-extensions -O0 -Wall -pedantic"
     export MAIN_LD="clang++ -fsanitize=undefined,address"
 
     # Did not copy over ~/.R/Makevars from BDR's page because other R
