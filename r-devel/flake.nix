@@ -72,7 +72,7 @@
         ({ pkgs, system, r-source, svn-id, recommendedPackagesPaths, ... }: {
 
           default = pkgs.stdenv.mkDerivation {
-            name = "R-devel";
+            name = "R";
             src = r-source;
 
             enableParallelBuilding = true;
@@ -225,6 +225,20 @@
 
           };
         });
+
+      apps = forEachSupportedSystem ({ system, ... }: rec {
+        R = {
+          type = "app";
+          program = "${self.packages.${system}.default}/bin/R";
+        };
+
+        default = R;
+
+        Rscript = {
+          type = "app";
+          program = "${self.packages.${system}.default}/bin/Rscript";
+        };
+      });
 
       devShells = forEachSupportedSystem ({ pkgs, system, r-source, ... }: {
         default = pkgs.mkShell {
