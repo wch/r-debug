@@ -83,8 +83,6 @@
 
             buildInputs = with pkgs;
               [
-                git # For making a simulated SVN checkout
-                rsync # For rsync-recommended
                 bzip2
                 gfortran
                 xorg.libX11
@@ -228,10 +226,8 @@
           };
         });
 
-      # Development environments
       devShells = forEachSupportedSystem ({ pkgs, system, r-source, ... }: {
         default = pkgs.mkShell {
-          # Get the nativeBuildInputs from packages.default
           inputsFrom = [ self.packages.${system}.default ];
 
           packages = with pkgs; [ git ];
