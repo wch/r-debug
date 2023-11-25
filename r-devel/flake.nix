@@ -15,7 +15,9 @@
       commit = "ac5687a7cc477d4461176013babe38ec4adfafeb";
       commit-date = "2023-11-23";
       svn-id = "85618";
+      version-string = "4.4.0"; # From /VERSION file
       sha256 = "sha256-ssQ0GUG+QtLcKn/86e/LDvKoUOu7xR8HMppQccCunyk=";
+      recommended-base-url = "https://cran.rstudio.com/src/contrib";
 
       forEachSupportedSystem = f:
         nixpkgs.lib.genAttrs allSystems (system:
@@ -28,6 +30,44 @@
               rev = commit;
               sha256 = sha256;
             };
+
+            fetchMultipleFiles = { dataFile, baseUrl }:
+              let
+                fileContent = (builtins.readFile dataFile);
+                all_lines = pkgs.lib.splitString "\n" fileContent;
+                lines = pkgs.lib.filter (line: line != "") all_lines;
+
+                fetchFile = line:
+                  let
+                    parts = pkgs.lib.splitString " " line;
+                    # parts2 = pkgs.lib.traceSeq parts parts;
+                    name = builtins.head parts;
+                    hash = builtins.elemAt parts 1;
+                  in pkgs.fetchurl {
+                    url = baseUrl + name;
+                    sha256 = hash;
+                  } // {
+                    filename = name;
+                  };
+
+              in builtins.map fetchFile lines;
+
+            recommendedPackages = fetchMultipleFiles {
+              dataFile = ./recommended_files.txt;
+              baseUrl =
+                "${recommended-base-url}/${version-string}/Recommended/";
+            };
+
+            recommendedPackagesPaths = map (x:
+              pkgs.lib.concatStringsSep " " [
+                "ln -s"
+                x.outPath
+                (pkgs.lib.concatStrings [
+                  "src/library/Recommended/"
+                  x.filename
+                ])
+              ]) recommendedPackages;
+
             inherit svn-id;
           });
 
@@ -38,7 +78,7 @@
 
     in {
       packages = forEachSupportedSystem
-        ({ pkgs, system, r-source, svn-id, ... }: {
+        ({ pkgs, system, r-source, svn-id, recommendedPackagesPaths, ... }: {
 
           default = pkgs.stdenv.mkDerivation {
             name = "R-devel";
@@ -98,12 +138,6 @@
                 darwin.libobjc
                 libcxx
               ];
-
-            postUnpack = ''
-              cd $sourceRoot
-              tools/rsync-recommended
-              cd ..
-            '';
 
             setupHook = ./setup-hook.sh;
 
@@ -167,6 +201,15 @@
               )
               echo >>etc/Renviron.in "TCLLIBPATH=${pkgs.tk}/lib"
               echo >>etc/Renviron.in "TZDIR=${pkgs.tzdata}/share/zoneinfo"
+            '' + ''
+              ${pkgs.lib.concatStringsSep "\n" recommendedPackagesPaths}
+              cd src/library/Recommended
+              for i in $(ls *.tar.gz) ; do
+                ln -s $i $(echo $i | sed -e 's/_.*\.tar\.gz/.tgz/')
+              done
+              cd ../../..
+
+              ls -l src/library/Recommended
             '';
 
             postConfigure = ''
