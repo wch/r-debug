@@ -9,11 +9,12 @@
         [ "x86_64-linux" "aarch64-darwin" "x86_64-darwin" "aarch64-linux" ];
 
       # Commit info from r-source repo
-      commit = "ac5687a7cc477d4461176013babe38ec4adfafeb";
-      commit-date = "2023-11-23";
-      svn-id = "85618";
+      commit = "75cd3117e23f2010634200875f2ef50a83461b8f";
+      commit-date = "2023-11-28";
+      svn-id = "85645";
       version-string = "4.4.0"; # From /VERSION file
-      sha256 = "sha256-ssQ0GUG+QtLcKn/86e/LDvKoUOu7xR8HMppQccCunyk=";
+      sha256 = "sha256-uSo6SyW/zOW2jzrUiz6D/tNwFjRAgdGSPE9xXYFUYsE=";
+
       recommended-base-url = "https://cran.rstudio.com/src/contrib";
 
       forEachSupportedSystem = f:
