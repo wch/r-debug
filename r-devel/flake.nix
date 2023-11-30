@@ -1,7 +1,7 @@
 {
   description = "R-devel";
 
-  inputs = { nixpkgs.url = "github:nixos/nixpkgs/nixos-unstable"; };
+  inputs = { nixpkgs.url = "github:nixos/nixpkgs/nixos-23.11"; };
 
   outputs = { self, nixpkgs }:
     let
