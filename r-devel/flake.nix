@@ -9,11 +9,12 @@
         [ "x86_64-linux" "aarch64-darwin" "x86_64-darwin" "aarch64-linux" ];
 
       # Commit info from r-source repo
-      commit = "75cd3117e23f2010634200875f2ef50a83461b8f";
-      commit-date = "2023-11-28";
-      svn-id = "85645";
+      # TODO: Automate updating these values
+      commit = "3257731d626b7aadcce884bcf45fdc389cd13a33";
+      commit-date = "2023-12-07";
+      svn-id = "85660 ";
       version-string = "4.4.0"; # From /VERSION file
-      sha256 = "sha256-uSo6SyW/zOW2jzrUiz6D/tNwFjRAgdGSPE9xXYFUYsE=";
+      sha256 = "sha256-1T+4xkVN0CyHQvvyVd7OT6fRd9ReXvtM6TIbrHDpF0M=";
 
       recommended-base-url = "https://cran.rstudio.com/src/contrib";
 
@@ -206,7 +207,12 @@
               done
               ls -l
               cd ../../..
-            '';
+            '' +
+              # 2023-12-07: Extra flags so R doesn't turn warnings into errors.
+              # Hopefully we can remove this in the future.
+              ''
+                CFLAGS="-Wno-error -Wno-format-security"
+              '';
 
             postConfigure = ''
               # Do some stuff to simulate an SVN checkout.
