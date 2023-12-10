@@ -1,4 +1,7 @@
-#!/bin/bash
+#!/usr/bin/env bash
+
+# Use C locale to ensure consistent sorting of filenames across platforms
+LC_ALL=C
 
 # Directory containing the files
 DIRECTORY="$1"
