@@ -8,14 +8,6 @@
       allSystems =
         [ "x86_64-linux" "aarch64-darwin" "x86_64-darwin" "aarch64-linux" ];
 
-      # Commit info from r-source repo
-      # TODO: Automate updating these values
-      commit = "3257731d626b7aadcce884bcf45fdc389cd13a33";
-      commit-date = "2023-12-07";
-      svn-id = "85660 ";
-      version-string = "4.4.0"; # From /VERSION file
-      sha256 = "sha256-1T+4xkVN0CyHQvvyVd7OT6fRd9ReXvtM6TIbrHDpF0M=";
-
       recommended-base-url = "https://cran.rstudio.com/src/contrib";
 
       forEachSupportedSystem = f:
@@ -23,16 +15,41 @@
           f rec {
             pkgs = import nixpkgs { inherit system; };
             inherit system;
+
+            # ==================================================================
+            # Get information about the most recent commit on r-source
+            # ==================================================================
+            r-source-commit-info-text =
+              builtins.readFile ./r-source-commit-info.txt;
+            r-source-commit-info-lines =
+              nixpkgs.lib.splitString "\n" r-source-commit-info-text;
+            getValue = key:
+              with nixpkgs.lib;
+              head (filter (line: hasPrefix (key + "=") line)
+                r-source-commit-info-lines);
+            extractValue = key:
+              with nixpkgs.lib;
+              substring (stringLength key + 1) (stringLength (getValue key))
+              (getValue key);
+
+            commit = extractValue "commit";
+            commit-date = extractValue "commit-date";
+            version-string = extractValue "version-string";
+            svn-id = extractValue "svn-id";
+            sha256 = extractValue "sha256";
+
             r-source = pkgs.fetchgit {
               url = "https://github.com/wch/r-source.git";
-              # rev = "trunk";
               rev = commit;
               sha256 = sha256;
             };
 
+            # ==================================================================
+            # Get the files from the rsync-recommended script
+            # ==================================================================
             fetchMultipleFiles = { dataFile, baseUrl }:
               let
-                fileContent = (builtins.readFile dataFile);
+                fileContent = builtins.readFile dataFile;
                 all_lines = pkgs.lib.splitString "\n" fileContent;
                 lines = pkgs.lib.filter (line: line != "") all_lines;
 
@@ -60,8 +77,6 @@
             # This is used for a shell script later on.
             recommendedPackagesPaths = pkgs.lib.concatStringsSep " "
               (map (x: x.outPath) recommendedPackages);
-
-            inherit svn-id;
           });
 
       withRecommendedPackages = true;
@@ -70,11 +85,11 @@
       static = false;
 
     in {
-      packages = forEachSupportedSystem
-        ({ pkgs, system, r-source, svn-id, recommendedPackagesPaths, ... }: {
+      packages = forEachSupportedSystem ({ pkgs, system, r-source, svn-id
+        , commit-date, recommendedPackagesPaths, ... }: {
 
           default = pkgs.stdenv.mkDerivation {
-            name = "R";
+            name = "R-devel";
             src = r-source;
 
             enableParallelBuilding = true;
@@ -182,36 +197,40 @@
                 RANLIB=$(type -p ranlib)
                 r_cv_have_curl728=yes
                 R_SHELL="${pkgs.stdenv.shell}"
-            '' + pkgs.lib.optionalString pkgs.stdenv.isDarwin ''
-              --disable-R-framework
-              --without-x
-              OBJC="clang"
-              CPPFLAGS="-isystem ${pkgs.lib.getDev pkgs.libcxx}/include/c++/v1"
-              LDFLAGS="-L${pkgs.lib.getLib pkgs.libcxx}/lib"
-            '' + ''
-              )
-              echo >>etc/Renviron.in "TCLLIBPATH=${pkgs.tk}/lib"
-              echo >>etc/Renviron.in "TZDIR=${pkgs.tzdata}/share/zoneinfo"
-            '' + ''
-              # Do tasks similar to the rsync-recommended script
-              cd src/library/Recommended
-              for file in ${recommendedPackagesPaths} ; do
-                file_no_nix_path=$(echo $file | sed -E -e 's/[^-]+-//')
-                file_no_version=$(echo $file_no_nix_path | sed -e 's/_.*\.tar\.gz/.tgz/')
-                # At this point:
-                #  - file is like /nix/store/ya86vy-MASS_7.3-60.1.tar.gz
-                #  - file_no_nix_path is MASS_7.3-60.1.tar.gz
-                #  - file_no_version is MASS.tgz
-                ln -s $file $file_no_nix_path
-                ln -s $file_no_nix_path $file_no_version
-              done
-              ls -l
-              cd ../../..
             '' +
               # 2023-12-07: Extra flags so R doesn't turn warnings into errors.
-              # Hopefully we can remove this in the future.
+              # The flags that we're unsetting are coming from somewhere, but
+              # I'm not sure where. Hopefully we can remove this in the future.
               ''
                 CFLAGS="-Wno-error -Wno-format-security"
+              '' + pkgs.lib.optionalString pkgs.stdenv.isDarwin ''
+                --disable-R-framework
+                --without-x
+                OBJC="clang"
+                CPPFLAGS="-isystem ${
+                  pkgs.lib.getDev pkgs.libcxx
+                }/include/c++/v1"
+                LDFLAGS="-L${pkgs.lib.getLib pkgs.libcxx}/lib"
+              '' + ''
+                )
+
+                echo >>etc/Renviron.in "TCLLIBPATH=${pkgs.tk}/lib"
+                echo >>etc/Renviron.in "TZDIR=${pkgs.tzdata}/share/zoneinfo"
+              '' + ''
+                # Do tasks similar to the rsync-recommended script
+                cd src/library/Recommended
+                for file in ${recommendedPackagesPaths} ; do
+                  file_no_nix_path=$(echo $file | sed -E -e 's/[^-]+-//')
+                  file_no_version=$(echo $file_no_nix_path | sed -e 's/_.*\.tar\.gz/.tgz/')
+                  # At this point:
+                  #  - file is like /nix/store/ya86vy-MASS_7.3-60.1.tar.gz
+                  #  - file_no_nix_path is MASS_7.3-60.1.tar.gz
+                  #  - file_no_version is MASS.tgz
+                  ln -s $file $file_no_nix_path
+                  ln -s $file_no_nix_path $file_no_version
+                done
+                ls -l
+                cd ../../..
               '';
 
             postConfigure = ''
